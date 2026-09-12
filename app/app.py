@@ -46,7 +46,7 @@ st.markdown("""
 
 # Encabezado
 st.markdown('<div class="main-title">🌊 PTAR Digital Twin: Simulador Operativo y Optimización Energética</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle"><b>Candidato:</b> Angelo Apolo | Ing. Químico / Industrial | Especialista en Operaciones, Procesos y Utilidades<br><b>Objetivo:</b> Simulación en tiempo real de calidad de efluentes (DBO), balance de masa y cuantificación de ahorro eléctrico en sopladores.</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle"><b>Ingeniería de Procesos & Utilidades</b> | Ing. Angelo Apolo<br>Simulación de balances de materia, estimación de calidad de efluente (DBO) y optimización de sopladores de aireación.</div>', unsafe_allow_html=True)
 
 # Cargar modelo y features
 @st.cache_resource
@@ -320,4 +320,4 @@ with b_col2:
         """)
 
 st.markdown("---")
-st.caption("PTAR Digital Twin | Proyecto de Portafolio Técnico | Desarrollado con Streamlit, XGBoost y Python 3.13")
+st.caption("PTAR Digital Twin v1.2 | Sistema de Monitoreo y Simulación de Procesos | Streamlit & XGBoost")

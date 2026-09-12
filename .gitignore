@@ -15,3 +15,7 @@ ENV/
 
 # Power BI temporales
 *.tmp
+
+# Notas y herramientas internas de despliegue
+PROJECT_TRACKER.md
+docs/

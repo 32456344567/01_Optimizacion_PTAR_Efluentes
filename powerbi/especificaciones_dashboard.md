@@ -129,8 +129,8 @@ CO2 Evitado Tons =
 
 ---
 
-## 📸 3. Procedimiento para Capturar y Vincular a Notion
-1. Abrir Power BI Desktop y conectar al archivo: `powerbi/dataset_ptar_dashboard.csv`.
-2. Crear las medidas DAX especificadas arriba y montar los visuales según el layout.
-3. Guardar el archivo como: `powerbi/dashboard_ptar_operaciones.pbix`.
-4. Tomar capturas en alta resolución de ambas vistas y guardarlas en `powerbi/capturas_dashboard/` para incrustarlas en tu portafolio de Notion.
+## 📑 3. Generación del Tablero PBIX
+1. Conectar Power BI Desktop al archivo procesado: `powerbi/dataset_ptar_dashboard.csv`.
+2. Crear la tabla `_Medidas` e incorporar las 15 expresiones DAX detalladas arriba.
+3. Configurar la vista SCADA de Operación y la vista Ejecutiva de Costos/ESG según el layout.
+4. Guardar el archivo en: `powerbi/dashboard_ptar_operaciones.pbix`.
