@@ -1,0 +1,17 @@
+# Entornos y dependencias
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Datos pesados crudos (para GitHub se recomienda ignorar el csv de 25MB si excede límites o usar Git LFS)
+# data/wwtp_time_series_data.csv
+
+# Power BI temporales
+*.tmp
