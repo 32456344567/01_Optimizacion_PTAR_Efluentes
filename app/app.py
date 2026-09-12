@@ -45,7 +45,7 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
     }
     .topbar-title {
-        font-size: 1.25rem;
+        font-size: 1.22rem;
         font-weight: 800;
         letter-spacing: 0.8px;
         color: #F8FAFC;
@@ -148,17 +148,17 @@ st.markdown("""
         color: #F8FAFC !important;
     }
 
-    /* Guía de Operación */
+    /* Guía de Operación y Cajas de Proceso */
     .guide-box {
         background-color: #0B132B;
         border: 1px solid #1E293B;
         border-left: 4px solid #38BDF8;
         border-radius: 6px;
-        padding: 12px 18px;
+        padding: 14px 18px;
         margin-bottom: 1rem;
         font-size: 0.85rem;
         color: #CBD5E1;
-        line-height: 1.5;
+        line-height: 1.55;
     }
     .guide-step {
         display: inline-block;
@@ -195,8 +195,8 @@ except Exception:
 st.markdown("""
 <div class="scada-topbar">
     <div>
-        <div class="topbar-title">PTAR INDUSTRIAL 4,050 m³ // DIGITAL TWIN & CONTROL PREDICTIVO</div>
-        <div class="topbar-sub">Supervisión Operativa, Balances de Materia y Optimización de Aireación | Ing. Angelo Apolo</div>
+        <div class="topbar-title">PTAR INDUSTRIAL // DIGITAL TWIN, BALANCE INTEGRAL & CONTROL PREDICTIVO</div>
+        <div class="topbar-sub">Tren Completo: Desbaste &bull; DAF Físico-Químico &bull; Selector Anóxico &bull; Reactor Aerobio 4,050 m³ &bull; Clarificador | Ing. Angelo Apolo</div>
     </div>
     <div>
         <span class="pill-badge pill-live">● SCADA ONLINE [24/7]</span>
@@ -207,17 +207,22 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 5. GUÍA RÁPIDA DE OPERACIÓN (WORKFLOW INDUSTRIAL)
+# 5. GUÍA RÁPIDA DE OPERACIÓN Y ARQUITECTURA DEL PROCESO
 # ==============================================================================
-with st.expander("Instrucciones de Uso y Arquitectura del Simulador (Flujo Operativo)", expanded=False):
+with st.expander("Arquitectura del Proceso Industrial y Guía de Operación del Gemelo Digital", expanded=False):
     st.markdown("""
     <div class="guide-box">
-        <p><b>Propósito:</b> Este gemelo digital integra un modelo cinético acoplado a un sensor virtual (XGBoost) entrenado con 80,000 registros de planta para predecir la calidad del efluente final (DBO₅) y optimizar el consumo eléctrico de los sopladores de aireación en función de la dinámica horaria del afluente.</p>
-        <p><span class="guide-step">[Paso 1]</span> <b>Seleccionar Modo Operativo:</b> En la consola lateral, elija un escenario predeterminado (Operación Óptima, Línea Base Histórica, Pico Diurno o Valle Nocturno) o active el modo manual.</p>
-        <p><span class="guide-step">[Paso 2]</span> <b>Ajustar Consignas de Proceso:</b> Modifique caudales, concentraciones de entrada o el flujo de aire inyectado en los Racks 1, 2 y 3.</p>
-        <p><span class="guide-step">[Paso 3]</span> <b>Monitorear el Mímico PFD:</b> Inspeccione el diagrama de flujo dinámico y la Tabla de Corrientes (Stream Table) para verificar el balance de masa.</p>
-        <p><span class="guide-step">[Paso 4]</span> <b>Optimización Solver:</b> Use el botón de cálculo prescriptivo para encontrar el caudal de aire óptimo que minimice el gasto eléctrico cumpliendo el límite legal (DBO &le; 20 mg/L).</p>
-        <p><span class="guide-step">[Paso 5]</span> <b>Generar Despacho de Turno:</b> En la pestaña de POE, emita la orden formal de ajuste de variadores (VFD) para el operador de planta.</p>
+        <p><b>1. Arquitectura del Tren de Tratamiento Industrial Completo:</b></p>
+        <ul style="margin-left: 20px; margin-bottom: 10px;">
+            <li><b>Pre-tratamiento (T-101):</b> Tamizado y desbaste mecánico para remoción de sólidos gruesos e inertes.</li>
+            <li><b>Tratamiento Físico-Químico (DAF-102):</b> Unidad de Flotación por Aire Disuelto con coagulación/floculación. Remueve hasta el 90% de grasas y aceites (GyA) y el 40% de DQO insoluble, protegiendo a la biomasa de asfixia y evitando colmatación en difusores.</li>
+            <li><b>Selector Anóxico (R-201A):</b> Cámara desnitrificante con agitación mecánica lenta en ausencia de oxígeno disuelto (DO &approx; 0.1 mg/L). Recibe el efluente clarificado del DAF y el retorno de lodos (RAS), transformando nitratos (NO₃⁻) en nitrógeno gaseoso inerte (N₂&uarr;).</li>
+            <li><b>Reactor Biológico Aerobio (R-201B - 4,050 m³):</b> Zona de degradación de DBO soluble por bacterias heterótrofas y nitrificación aerobia, alimentada por difusores de burbuja fina y sopladores centrífugos K-201A/B.</li>
+            <li><b>Clarificador Secundario (C-301):</b> Sedimentación por gravedad del lodo biológico, recirculación de biomasa activa (RAS) y purga de lodos de descarte (WAS).</li>
+        </ul>
+        <p><b>2. Foco Estratégico del Gemelo Digital:</b></p>
+        <p>Aunque la planta opera como un tren integrado, <b>el 72% de la factura eléctrica y el riesgo crítico de sanción ambiental (TULSMA DBO &le; 20 mg/L) se concentran en la compresión de aire del reactor aerobio</b>. El sensor virtual XGBoost calcula continuamente la DBO de salida en función de la dinámica horaria del afluente para fijar la consigna óptima de aireación sin incurrir en sobrecostos energéticos.</p>
+        <p><b>3. Flujo de Uso en 5 Pasos:</b> [1] Seleccionar Escenario &rarr; [2] Ajustar Consignas en Racks SCADA &rarr; [3] Monitorear PFD & Stream Table &rarr; [4] Evaluar Curva de Monod & What-If &rarr; [5] Emitir Boleta de Despacho Operativo (POE).</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -252,20 +257,20 @@ else:
     def_q, def_bod_in, def_cod_in, def_do, def_air = 753.0, 317.0, 666.0, 2.00, 6.68
 
 # Racks de Entrada
-with st.sidebar.expander("RACK 1: Hidráulica & Afluente Crudo", expanded=True):
-    q_in = st.slider("Caudal Entrada FIT-101 (m³/h)", 300.0, 1200.0, float(def_q), step=10.0, help="Caudal total que ingresa a la cámara de desbaste.")
+with st.sidebar.expander("RACK 1: Afluente Crudo & DAF Primario", expanded=True):
+    q_in = st.slider("Caudal Entrada FIT-101 (m³/h)", 300.0, 1200.0, float(def_q), step=10.0, help="Caudal de ingreso al pozo de bombeo y desbaste.")
     bod_in = st.slider("DBO Entrada AIT-102 (mg/L)", 150.0, 450.0, float(def_bod_in), step=5.0, help="Demanda Bioquímica de Oxígeno en agua cruda.")
     cod_in = st.slider("DQO Entrada AIT-103 (mg/L)", 300.0, 900.0, float(def_cod_in), step=10.0, help="Demanda Química de Oxígeno total.")
     tss_in = st.slider("Sólidos Entrada TSS-104 (mg/L)", 100.0, 450.0, 298.0, step=5.0)
 
-with st.sidebar.expander("RACK 2: Biología & Aireación", expanded=True):
-    air_flow = st.slider("Inyección Aire FIT-202 (km³/h)", 2.5, 12.0, float(def_air), step=0.1, help="Flujo volumétrico inyectado por los sopladores.")
+with st.sidebar.expander("RACK 2: Reactor Biológico & Aireación", expanded=True):
+    air_flow = st.slider("Inyección Aire FIT-202 (km³/h)", 2.5, 12.0, float(def_air), step=0.1, help="Flujo inyectado por los sopladores K-201.")
     do_val = st.slider("Oxígeno Disuelto AIT-201 (mg/L)", 0.5, 4.5, float(def_do), step=0.05, help="Concentración en licor mezcla. Rango óptimo: 1.80 a 2.20 mg/L.")
     temp_val = st.slider("Temperatura TIT-203 (°C)", 15.0, 30.0, 22.2, step=0.5)
-    mlss_val = st.slider("Licor Mezcla MLSS-204 (mg/L)", 2200.0, 4500.0, 3500.0, step=50.0, help="Biomasa bacteriana suspendida en el reactor.")
+    mlss_val = st.slider("Licor Mezcla MLSS-204 (mg/L)", 2200.0, 4500.0, 3500.0, step=50.0, help="Biomasa bacteriana en el reactor.")
 
 with st.sidebar.expander("RACK 3: Clarificador & Purgas", expanded=False):
-    blanket_val = st.slider("Manto de Lodos LIT-301 (m)", 0.4, 2.2, 1.17, step=0.05, help="Nivel de lodo sedimentado. Umbral de alarma: > 1.60 m.")
+    blanket_val = st.slider("Manto de Lodos LIT-301 (m)", 0.4, 2.2, 1.17, step=0.05, help="Nivel de lodo sedimentado. Umbral crítico: > 1.60 m.")
     ras_val = st.slider("Retorno RAS FIT-302 (m³/h)", 200.0, 750.0, 525.0, step=10.0)
     was_val = st.slider("Purga WAS FIT-303 (m³/h)", 4.0, 20.0, 12.0, step=0.5)
 
@@ -419,9 +424,9 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # PESTAÑA 1: MÍMICO DE PROCESO (PFD SCADA) Y TABLA DE CORRIENTES
 # ==============================================================================
 with tab1:
-    st.markdown("#### Diagrama de Flujo de Procesos (PFD) // Telemetría en Tiempo Real")
+    st.markdown("#### Diagrama de Flujo de Procesos (PFD) // Tren de Tratamiento Completo")
     
-    # Renderizado Vectorial Aislado mediante iframe components.html
+    # Renderizado Vectorial Aislado mediante iframe components.html (Tren Completo)
     pfd_html = f"""
     <!DOCTYPE html>
     <html>
@@ -433,7 +438,7 @@ with tab1:
         .pfd-container {{
             position: relative;
             width: 100%;
-            height: 380px;
+            height: 385px;
             background: radial-gradient(circle at 50% 50%, #0F172A 0%, #070B14 100%);
             border: 1px solid #1E293B;
             border-radius: 8px;
@@ -442,13 +447,13 @@ with tab1:
         .grid-bg {{
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-            background-size: 25px 25px;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 24px 24px;
             pointer-events: none;
         }}
         .flow-line {{
-            stroke-dasharray: 8, 5;
+            stroke-dasharray: 7, 4;
             animation: flowAnimation 1.2s linear infinite;
         }}
         .air-line {{
@@ -460,26 +465,41 @@ with tab1:
             animation: flowAnimation 2s linear infinite;
         }}
         @keyframes flowAnimation {{
-            from {{ stroke-dashoffset: 26; }}
+            from {{ stroke-dashoffset: 22; }}
             to {{ stroke-dashoffset: 0; }}
         }}
         .bubble {{
             animation: rise 2s infinite ease-in;
         }}
         @keyframes rise {{
-            0% {{ transform: translateY(0); opacity: 0.2; }}
+            0% {{ transform: translateY(0); opacity: 0.15; }}
             50% {{ opacity: 0.85; }}
-            100% {{ transform: translateY(-45px); opacity: 0; }}
+            100% {{ transform: translateY(-42px); opacity: 0; }}
+        }}
+        .rotate-mixer {{
+            transform-origin: 282px 175px;
+            animation: spin 3s linear infinite;
+        }}
+        @keyframes spin {{
+            100% {{ transform: rotate(360deg); }}
         }}
     </style>
     </head>
     <body>
     <div class="pfd-container">
         <div class="grid-bg"></div>
-        <svg viewBox="0 0 1000 380" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 1100 385" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stop-color="#1E3A8A" stop-opacity="0.6"/>
+                    <stop offset="100%" stop-color="#0F172A" stop-opacity="0.95"/>
+                </linearGradient>
+                <linearGradient id="anoxicGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#14532D" stop-opacity="0.5"/>
+                    <stop offset="100%" stop-color="#064E3B" stop-opacity="0.9"/>
+                </linearGradient>
+                <linearGradient id="dafGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#1E293B" stop-opacity="0.8"/>
                     <stop offset="100%" stop-color="#0F172A" stop-opacity="0.95"/>
                 </linearGradient>
                 <linearGradient id="sludgeGrad" x1="0" y1="0" x2="0" y2="1">
@@ -489,136 +509,168 @@ with tab1:
             </defs>
 
             <!-- ENCABEZADO SCADA -->
-            <rect x="15" y="10" width="970" height="26" fill="#0B132B" stroke="#1E293B" rx="4"/>
-            <text x="30" y="27" fill="#64748B" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700">ISA-5.1 PROCESS FLOW DIAGRAM (PFD) // PLANTA BIOLÓGICA 4,050 m³</text>
-            <text x="960" y="27" text-anchor="end" fill="#10B981" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700">ESTADO: ONLINE CONTINUO</text>
+            <rect x="15" y="8" width="1070" height="26" fill="#0B132B" stroke="#1E293B" rx="4"/>
+            <text x="30" y="25" fill="#94A3B8" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700">ISA-5.1 PFD // TREN COMPLETO: DESBASTE &bull; DAF FÍSICO-QUÍMICO &bull; SELECTOR ANÓXICO &bull; AEROBIO 4,050 m³ &bull; CLARIFICADOR</text>
+            <text x="1070" y="25" text-anchor="end" fill="#10B981" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700">SUPERVISIÓN ONLINE</text>
 
-            <!-- ================= TUBERÍAS DE PROCESO ================= -->
+            <!-- ================= TUBERÍAS Y FLUJOS ================= -->
             
-            <!-- Entrada Afluente Crudo -->
-            <path d="M 25 150 L 190 150" stroke="#38BDF8" stroke-width="4" fill="none" class="flow-line"/>
-            <polygon points="185,146 195,150 185,154" fill="#38BDF8"/>
+            <!-- Corriente 1: Agua Cruda a Desbaste -->
+            <path d="M 20 160 L 50 160" stroke="#38BDF8" stroke-width="4" fill="none" class="flow-line"/>
             
-            <!-- Licor Mezcla a Clarificador -->
-            <path d="M 450 150 L 600 150" stroke="#38BDF8" stroke-width="4" fill="none" class="flow-line"/>
-            <polygon points="595,146 605,150 595,154" fill="#38BDF8"/>
+            <!-- Desbaste a DAF -->
+            <path d="M 100 160 L 130 160" stroke="#38BDF8" stroke-width="3.5" fill="none" class="flow-line"/>
+            <polygon points="125,156 135,160 125,164" fill="#38BDF8"/>
 
-            <!-- Inyección de Aire (Sopladores a Reactor) -->
-            <path d="M 320 310 L 320 235" stroke="#2DD4BF" stroke-width="3.5" fill="none" class="air-line"/>
-            <polygon points="317,240 320,230 323,240" fill="#2DD4BF"/>
+            <!-- DAF a Anóxico -->
+            <path d="M 210 160 L 245 160" stroke="#38BDF8" stroke-width="3.5" fill="none" class="flow-line"/>
+            <polygon points="240,156 250,160 240,164" fill="#38BDF8"/>
 
-            <!-- Retorno Lodos RAS -->
-            <path d="M 710 270 L 710 335 L 160 335 L 160 165" stroke="#F59E0B" stroke-width="2.5" fill="none" class="sludge-line"/>
-            <polygon points="157,170 160,160 163,170" fill="#F59E0B"/>
+            <!-- Anóxico a Aerobio (Paso intermedio) -->
+            <path d="M 320 160 L 350 160" stroke="#38BDF8" stroke-width="4" fill="none" class="flow-line"/>
+            <polygon points="345,156 355,160 345,164" fill="#38BDF8"/>
 
-            <!-- Purga Lodos WAS -->
-            <path d="M 710 270 L 710 335 L 850 335" stroke="#EF4444" stroke-width="2.5" fill="none" class="sludge-line"/>
-            <polygon points="845,332 855,335 845,338" fill="#EF4444"/>
+            <!-- Aerobio a Clarificador -->
+            <path d="M 600 160 L 680 160" stroke="#38BDF8" stroke-width="4" fill="none" class="flow-line"/>
+            <polygon points="675,156 685,160 675,164" fill="#38BDF8"/>
 
-            <!-- Salida Efluente Tratado -->
-            <path d="M 820 135 L 965 135" stroke="{status_color}" stroke-width="4" fill="none" class="flow-line"/>
-            <polygon points="960,131 970,135 960,139" fill="{status_color}"/>
+            <!-- Clarificador a Salida Efluente -->
+            <path d="M 890 145 L 970 145" stroke="{status_color}" stroke-width="4" fill="none" class="flow-line"/>
+            <polygon points="965,141 975,145 965,149" fill="{status_color}"/>
 
-            <!-- ================= EQUIPOS PRINCIPALES ================= -->
+            <!-- Aire Soplador a Reactor Aerobio -->
+            <path d="M 480 315 L 480 230" stroke="#2DD4BF" stroke-width="3" fill="none" class="air-line"/>
+            <polygon points="477,235 480,225 483,235" fill="#2DD4BF"/>
 
-            <!-- T-101: Cámara de Desbaste -->
-            <rect x="50" y="115" width="70" height="70" rx="4" fill="#1E293B" stroke="#475569" stroke-width="1.5"/>
-            <line x1="75" y1="120" x2="65" y2="180" stroke="#64748B" stroke-width="2"/>
-            <line x1="85" y1="120" x2="75" y2="180" stroke="#64748B" stroke-width="2"/>
-            <line x1="95" y1="120" x2="85" y2="180" stroke="#64748B" stroke-width="2"/>
-            <text x="85" y="105" text-anchor="middle" fill="#94A3B8" font-size="9" font-family="'JetBrains Mono', monospace" font-weight="700">T-101 DESBASTE</text>
+            <!-- Recirculación Lodos RAS (Clarificador a Selector Anóxico) -->
+            <path d="M 785 275 L 785 340 L 282 340 L 282 235" stroke="#F59E0B" stroke-width="2.5" fill="none" class="sludge-line"/>
+            <polygon points="279,240 282,230 285,240" fill="#F59E0B"/>
 
-            <!-- R-201: Reactor Biológico de Lodos Activados -->
-            <rect x="190" y="85" width="260" height="155" rx="6" fill="url(#waterGrad)" stroke="#38BDF8" stroke-width="2"/>
-            <text x="320" y="105" text-anchor="middle" fill="#F8FAFC" font-size="11" font-weight="700" letter-spacing="0.5">R-201 TANQUE DE AIREACIÓN</text>
-            <text x="320" y="119" text-anchor="middle" fill="#64748B" font-size="9" font-family="'JetBrains Mono', monospace">VOL: 4,050 m³ | MLSS: {mlss_val:.0f} mg/L</text>
+            <!-- Purga WAS -->
+            <path d="M 785 275 L 785 340 L 910 340" stroke="#EF4444" stroke-width="2.5" fill="none" class="sludge-line"/>
+            <polygon points="905,337 915,340 905,343" fill="#EF4444"/>
+
+            <!-- Purga de Lodo Flotado DAF -->
+            <path d="M 170 205 L 170 255 L 120 255" stroke="#D97706" stroke-width="2" stroke-dasharray="4,4" fill="none"/>
+            <polygon points="125,252 115,255 125,258" fill="#D97706"/>
+            <text x="110" y="270" text-anchor="middle" fill="#D97706" font-size="8" font-family="'JetBrains Mono', monospace">LODO DAF</text>
+
+            <!-- ================= EQUIPOS DE PROCESO ================= -->
+
+            <!-- EQUIPO 1: DESBASTE T-101 -->
+            <rect x="50" y="125" width="50" height="70" rx="3" fill="#1E293B" stroke="#475569" stroke-width="1.2"/>
+            <line x1="65" y1="130" x2="58" y2="190" stroke="#64748B" stroke-width="2"/>
+            <line x1="75" y1="130" x2="68" y2="190" stroke="#64748B" stroke-width="2"/>
+            <line x1="85" y1="130" x2="78" y2="190" stroke="#64748B" stroke-width="2"/>
+            <text x="75" y="118" text-anchor="middle" fill="#94A3B8" font-size="8.5" font-family="'JetBrains Mono', monospace" font-weight="700">T-101</text>
+            <text x="75" y="208" text-anchor="middle" fill="#64748B" font-size="7.5" font-family="'JetBrains Mono', monospace">TAMIZ</text>
+
+            <!-- EQUIPO 2: DAF-102 (FLOTACIÓN POR AIRE DISUELTO) -->
+            <polygon points="130,120 210,120 210,185 185,205 155,205 130,185" fill="url(#dafGrad)" stroke="#38BDF8" stroke-width="1.5"/>
+            <line x1="135" y1="124" x2="205" y2="124" stroke="#D97706" stroke-width="2.5"/>
+            <text x="170" y="112" text-anchor="middle" fill="#38BDF8" font-size="9" font-family="'JetBrains Mono', monospace" font-weight="700">DAF-102</text>
+            <text x="170" y="145" text-anchor="middle" fill="#94A3B8" font-size="8" font-family="'JetBrains Mono', monospace">FÍSICO-QMC</text>
+            <text x="170" y="158" text-anchor="middle" fill="#64748B" font-size="7.5" font-family="'JetBrains Mono', monospace">Grasas &le; 90%</text>
+            <circle cx="155" cy="175" r="1.5" fill="#BAE6FD" opacity="0.6"/>
+            <circle cx="170" cy="170" r="1.5" fill="#BAE6FD" opacity="0.7"/>
+            <circle cx="185" cy="178" r="1.5" fill="#BAE6FD" opacity="0.6"/>
+
+            <!-- EQUIPO 3: R-201A SELECTOR ANÓXICO (PRE-DESNITRIFICACIÓN) -->
+            <rect x="245" y="100" width="75" height="135" rx="4" fill="url(#anoxicGrad)" stroke="#10B981" stroke-width="1.5"/>
+            <text x="282" y="115" text-anchor="middle" fill="#A7F3D0" font-size="8.5" font-family="'JetBrains Mono', monospace" font-weight="700">R-201A</text>
+            <text x="282" y="127" text-anchor="middle" fill="#6EE7B7" font-size="7.5" font-family="'JetBrains Mono', monospace">ANÓXICO</text>
+            <text x="282" y="139" text-anchor="middle" fill="#94A3B8" font-size="7" font-family="'JetBrains Mono', monospace">DO &approx; 0.1</text>
+            <line x1="282" y1="100" x2="282" y2="175" stroke="#94A3B8" stroke-width="2"/>
+            <g class="rotate-mixer">
+                <line x1="270" y1="175" x2="294" y2="175" stroke="#34D399" stroke-width="2.5"/>
+                <line x1="282" y1="163" x2="282" y2="187" stroke="#34D399" stroke-width="2.5"/>
+            </g>
+            <text x="282" y="205" text-anchor="middle" fill="#6EE7B7" font-size="7.5" font-family="'JetBrains Mono', monospace">NO₃ &rarr; N₂&uarr;</text>
+
+            <!-- EQUIPO 4: R-201B REACTOR AEROBIO (4,050 m³) -->
+            <rect x="350" y="90" width="250" height="145" rx="6" fill="url(#waterGrad)" stroke="#38BDF8" stroke-width="2"/>
+            <text x="475" y="110" text-anchor="middle" fill="#F8FAFC" font-size="11" font-weight="700">R-201B REACTOR AEROBIO</text>
+            <text x="475" y="124" text-anchor="middle" fill="#64748B" font-size="9" font-family="'JetBrains Mono', monospace">VOL: 4,050 m³ | MLSS: {mlss_val:.0f} mg/L</text>
             
-            <line x1="195" y1="130" x2="445" y2="130" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="4,2"/>
-            <line x1="210" y1="225" x2="430" y2="225" stroke="#2DD4BF" stroke-width="3"/>
+            <line x1="355" y1="135" x2="595" y2="135" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="4,2"/>
+            <line x1="370" y1="225" x2="580" y2="225" stroke="#2DD4BF" stroke-width="3"/>
             
             <!-- Burbujas animadas -->
             <g class="bubble">
-                <circle cx="240" cy="210" r="2.5" fill="#A7F3D0"/>
-                <circle cx="300" cy="200" r="3" fill="#A7F3D0"/>
-                <circle cx="360" cy="215" r="2.5" fill="#A7F3D0"/>
-                <circle cx="410" cy="205" r="3" fill="#A7F3D0"/>
+                <circle cx="400" cy="210" r="2.5" fill="#A7F3D0"/>
+                <circle cx="460" cy="205" r="3" fill="#A7F3D0"/>
+                <circle cx="515" cy="215" r="2.5" fill="#A7F3D0"/>
+                <circle cx="560" cy="205" r="3" fill="#A7F3D0"/>
             </g>
             <g class="bubble" style="animation-delay: 0.9s;">
-                <circle cx="260" cy="180" r="2" fill="#6EE7B7"/>
-                <circle cx="330" cy="175" r="3.5" fill="#6EE7B7"/>
-                <circle cx="380" cy="185" r="2" fill="#6EE7B7"/>
+                <circle cx="420" cy="180" r="2" fill="#6EE7B7"/>
+                <circle cx="485" cy="175" r="3.5" fill="#6EE7B7"/>
+                <circle cx="540" cy="185" r="2" fill="#6EE7B7"/>
             </g>
 
-            <!-- K-201A/B: Sopladores Centrífugos VFD -->
-            <circle cx="320" cy="310" r="20" fill="#1E293B" stroke="#2DD4BF" stroke-width="2"/>
-            <path d="M 312 300 L 328 310 L 312 320 Z" fill="#2DD4BF"/>
-            <text x="320" y="344" text-anchor="middle" fill="#F8FAFC" font-size="10" font-weight="700">K-201A/B VFD</text>
-            <text x="320" y="356" text-anchor="middle" fill="#2DD4BF" font-size="9" font-family="'JetBrains Mono', monospace">{air_flow:.1f} km³/h · {power_kw:.1f} kW</text>
+            <!-- EQUIPO 5: SOPLADORES VFD (K-201A/B) -->
+            <circle cx="480" cy="315" r="20" fill="#1E293B" stroke="#2DD4BF" stroke-width="2"/>
+            <path d="M 472 305 L 488 315 L 472 325 Z" fill="#2DD4BF"/>
+            <text x="480" y="348" text-anchor="middle" fill="#F8FAFC" font-size="10" font-weight="700">K-201A/B VFD</text>
+            <text x="480" y="360" text-anchor="middle" fill="#2DD4BF" font-size="9" font-family="'JetBrains Mono', monospace">{air_flow:.1f} km³/h · {power_kw:.1f} kW</text>
 
-            <!-- C-301: Clarificador Secundario -->
-            <polygon points="600,95 820,95 820,190 740,265 680,265 600,190" fill="url(#waterGrad)" stroke="#38BDF8" stroke-width="2"/>
-            <polygon points="620,185 800,185 820,190 740,265 680,265 600,190" fill="url(#sludgeGrad)" stroke="none"/>
-            <text x="710" y="112" text-anchor="middle" fill="#F8FAFC" font-size="11" font-weight="700">C-301 CLARIFICADOR</text>
-            <text x="710" y="125" text-anchor="middle" fill="#64748B" font-size="9" font-family="'JetBrains Mono', monospace">SEDIMENTADOR SECUNDARIO</text>
+            <!-- EQUIPO 6: CLARIFICADOR C-301 -->
+            <polygon points="680,100 890,100 890,195 815,270 755,270 680,195" fill="url(#waterGrad)" stroke="#38BDF8" stroke-width="2"/>
+            <polygon points="700,190 870,190 890,195 815,270 755,270 680,195" fill="url(#sludgeGrad)" stroke="none"/>
+            <text x="785" y="118" text-anchor="middle" fill="#F8FAFC" font-size="11" font-weight="700">C-301 CLARIFICADOR</text>
+            <text x="785" y="131" text-anchor="middle" fill="#64748B" font-size="9" font-family="'JetBrains Mono', monospace">SEDIMENTADOR SECUNDARIO</text>
             
-            <line x1="600" y1="95" x2="820" y2="95" stroke="#94A3B8" stroke-width="3"/>
-            <rect x="705" y="85" width="10" height="20" fill="#64748B"/>
-            <line x1="620" y1="185" x2="800" y2="185" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4,2"/>
-            <text x="710" y="200" text-anchor="middle" fill="#FCD34D" font-size="9" font-family="'JetBrains Mono', monospace" font-weight="700">MANTO: {blanket_val:.2f} m</text>
+            <line x1="680" y1="100" x2="890" y2="100" stroke="#94A3B8" stroke-width="3"/>
+            <rect x="780" y="90" width="10" height="20" fill="#64748B"/>
+            <line x1="700" y1="190" x2="870" y2="190" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4,2"/>
+            <text x="785" y="205" text-anchor="middle" fill="#FCD34D" font-size="9" font-family="'JetBrains Mono', monospace" font-weight="700">MANTO: {blanket_val:.2f} m</text>
 
-            <!-- P-301: Bomba RAS / WAS -->
-            <circle cx="710" cy="285" r="14" fill="#1E293B" stroke="#F59E0B" stroke-width="1.5"/>
-            <text x="710" y="289" text-anchor="middle" fill="#F59E0B" font-size="8" font-weight="700">P-301</text>
-            <text x="780" y="325" fill="#94A3B8" font-size="8.5" font-family="'JetBrains Mono', monospace">WAS: {was_val:.1f} m³/h</text>
-            <text x="590" y="350" fill="#94A3B8" font-size="8.5" font-family="'JetBrains Mono', monospace">RAS: {ras_val:.1f} m³/h</text>
+            <!-- EQUIPO 7: BOMBAS RAS/WAS (P-301) -->
+            <circle cx="785" cy="290" r="14" fill="#1E293B" stroke="#F59E0B" stroke-width="1.5"/>
+            <text x="785" y="294" text-anchor="middle" fill="#F59E0B" font-size="8" font-weight="700">P-301</text>
+            <text x="845" y="325" fill="#94A3B8" font-size="8.5" font-family="'JetBrains Mono', monospace">WAS: {was_val:.1f} m³/h</text>
+            <text x="690" y="355" fill="#94A3B8" font-size="8.5" font-family="'JetBrains Mono', monospace">RAS: {ras_val:.1f} m³/h</text>
 
             <!-- ================= INSTRUMENTACIÓN ISA-5.1 ================= -->
 
-            <!-- FIT-101 -->
-            <g transform="translate(100, 38)">
+            <!-- FIT-101 Entrada -->
+            <g transform="translate(45, 45)">
                 <rect x="0" y="0" width="85" height="42" rx="4" fill="#0F172A" stroke="#38BDF8" stroke-width="1.2"/>
                 <line x1="0" y1="16" x2="85" y2="16" stroke="#1E293B" stroke-width="1"/>
                 <text x="42.5" y="12" text-anchor="middle" fill="#94A3B8" font-size="8.5" font-family="'JetBrains Mono', monospace" font-weight="700">FIT-101</text>
                 <text x="42.5" y="32" text-anchor="middle" fill="#F8FAFC" font-size="12" font-family="'JetBrains Mono', monospace" font-weight="800">{q_in:.0f} m³/h</text>
-                <line x1="42.5" y1="42" x2="42.5" y2="110" stroke="#38BDF8" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="42.5" y1="42" x2="42.5" y2="125" stroke="#38BDF8" stroke-width="1" stroke-dasharray="2,2"/>
             </g>
 
-            <!-- AIT-102 -->
-            <g transform="translate(20, 78)">
-                <rect x="0" y="0" width="80" height="36" rx="4" fill="#0F172A" stroke="#38BDF8" stroke-width="1"/>
-                <text x="40" y="14" text-anchor="middle" fill="#94A3B8" font-size="8" font-family="'JetBrains Mono', monospace">AIT-102</text>
-                <text x="40" y="28" text-anchor="middle" fill="#38BDF8" font-size="10.5" font-family="'JetBrains Mono', monospace" font-weight="700">{bod_in:.0f} mg/L</text>
-            </g>
-
-            <!-- AIT-201 -->
-            <g transform="translate(275, 25)">
+            <!-- AIT-201 Oxígeno Disuelto -->
+            <g transform="translate(430, 30)">
                 <rect x="0" y="0" width="90" height="42" rx="4" fill="#0F172A" stroke="#2DD4BF" stroke-width="1.5"/>
                 <line x1="0" y1="16" x2="90" y2="16" stroke="#1E293B" stroke-width="1"/>
                 <text x="45" y="12" text-anchor="middle" fill="#94A3B8" font-size="8.5" font-family="'JetBrains Mono', monospace" font-weight="700">AIT-201 (DO)</text>
                 <text x="45" y="33" text-anchor="middle" fill="#2DD4BF" font-size="13" font-family="'JetBrains Mono', monospace" font-weight="800">{do_val:.2f} mg/L</text>
-                <line x1="45" y1="42" x2="45" y2="85" stroke="#2DD4BF" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="45" y1="42" x2="45" y2="90" stroke="#2DD4BF" stroke-width="1" stroke-dasharray="2,2"/>
             </g>
 
-            <!-- LIT-301 -->
-            <g transform="translate(735, 42)">
+            <!-- LIT-301 Manto Lodos -->
+            <g transform="translate(805, 45)">
                 <rect x="0" y="0" width="80" height="38" rx="4" fill="#0F172A" stroke="#F59E0B" stroke-width="1.2"/>
                 <text x="40" y="14" text-anchor="middle" fill="#94A3B8" font-size="8" font-family="'JetBrains Mono', monospace">LIT-301 (MANTO)</text>
                 <text x="40" y="30" text-anchor="middle" fill="#FCD34D" font-size="11" font-family="'JetBrains Mono', monospace" font-weight="800">{blanket_val:.2f} m</text>
-                <line x1="40" y1="38" x2="40" y2="95" stroke="#F59E0B" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="40" y1="38" x2="40" y2="100" stroke="#F59E0B" stroke-width="1" stroke-dasharray="2,2"/>
             </g>
 
-            <!-- AIT-401 -->
-            <g transform="translate(860, 55)">
-                <rect x="0" y="0" width="115" height="48" rx="4" fill="#0F172A" stroke="{status_color}" stroke-width="2"/>
-                <line x1="0" y1="18" x2="115" y2="18" stroke="#1E293B" stroke-width="1"/>
-                <text x="57.5" y="13" text-anchor="middle" fill="{status_color}" font-size="8.5" font-family="'JetBrains Mono', monospace" font-weight="800">AIT-401 // DBO FINAL</text>
-                <text x="57.5" y="37" text-anchor="middle" fill="#FFFFFF" font-size="15" font-family="'JetBrains Mono', monospace" font-weight="900">{bod_out:.2f} mg/L</text>
-                <line x1="57.5" y1="48" x2="57.5" y2="135" stroke="{status_color}" stroke-width="1.5" stroke-dasharray="2,2"/>
+            <!-- AIT-401 Efluente DBO Final -->
+            <g transform="translate(945, 65)">
+                <rect x="0" y="0" width="130" height="52" rx="4" fill="#0F172A" stroke="{status_color}" stroke-width="2"/>
+                <line x1="0" y1="18" x2="130" y2="18" stroke="#1E293B" stroke-width="1"/>
+                <text x="65" y="13" text-anchor="middle" fill="{status_color}" font-size="8.5" font-family="'JetBrains Mono', monospace" font-weight="800">AIT-401 // DBO FINAL</text>
+                <text x="65" y="39" text-anchor="middle" fill="#FFFFFF" font-size="16" font-family="'JetBrains Mono', monospace" font-weight="900">{bod_out:.2f} mg/L</text>
+                <line x1="65" y1="52" x2="65" y2="145" stroke="{status_color}" stroke-width="1.5" stroke-dasharray="2,2"/>
             </g>
 
             <!-- BADGE NORMATIVO -->
-            <rect x="860" y="107" width="115" height="18" rx="3" fill="#0F172A" stroke="{status_color}" stroke-width="1"/>
-            <text x="917.5" y="120" text-anchor="middle" fill="{status_color}" font-size="8" font-family="'JetBrains Mono', monospace" font-weight="700">{status_label[:14]}</text>
+            <rect x="945" y="122" width="130" height="18" rx="3" fill="#0F172A" stroke="{status_color}" stroke-width="1"/>
+            <text x="1010" y="135" text-anchor="middle" fill="{status_color}" font-size="8" font-family="'JetBrains Mono', monospace" font-weight="700">{status_label[:15]}</text>
         </svg>
     </div>
     </body>
@@ -629,13 +681,21 @@ with tab1:
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
     
     # Tabla de Corrientes de Proceso (Stream Table)
-    st.markdown("##### Balance Másico de Corrientes de Planta (Stream Table)")
+    st.markdown("##### Balance Másico Integral del Tren de Tratamiento (Stream Table)")
+    
+    # Estimaciones fisicoquímicas del DAF
+    bod_daf_out = bod_in * 0.82  # ~18% remoción DBO particulada en DAF
+    cod_daf_out = cod_in * 0.65  # ~35% remoción DQO particulada/grasas en DAF
+    tss_daf_out = tss_in * 0.20  # ~80% remoción de sólidos suspendidos en DAF
+    
     streams_df = pd.DataFrame([
-        {"Corriente": "1. Afluente Crudo", "Tag / Punto": "FIT-101 / AIT-102", "Caudal (m³/h)": f"{q_in:.1f}", "DBO₅ (mg/L)": f"{bod_in:.1f}", "DQO (mg/L)": f"{cod_in:.1f}", "Carga Másica (kg/h)": f"{load_bod_in_kgh:.2f}", "Carga Diaria (kg/d)": f"{load_bod_in_kgh*24:,.1f}", "Estado ISA": "Normal"},
-        {"Corriente": "2. Biomasa Reactor", "Tag / Punto": "R-201 (4,050 m³)", "Caudal (m³/h)": f"{q_in:.1f}", "DBO₅ (mg/L)": f"DO: {do_val:.2f}", "DQO (mg/L)": f"MLSS: {mlss_val:.0f}", "Carga Másica (kg/h)": f"HRT: {hrt_val:.2f} h", "Carga Diaria (kg/d)": f"F/M: {fm_ratio:.3f}", "Estado ISA": "Óptimo" if 1.8 <= do_val <= 2.2 else "Alerta"},
-        {"Corriente": "3. Retorno Lodos (RAS)", "Tag / Punto": "P-301 / FIT-302", "Caudal (m³/h)": f"{ras_val:.1f}", "DBO₅ (mg/L)": "Biomasa Retorno", "DQO (mg/L)": "—", "Carga Másica (kg/h)": "—", "Carga Diaria (kg/d)": "—", "Estado ISA": "Activo"},
-        {"Corriente": "4. Purga Lodos (WAS)", "Tag / Punto": "P-302 / FIT-303", "Caudal (m³/h)": f"{was_val:.1f}", "DBO₅ (mg/L)": f"Manto: {blanket_val:.2f} m", "DQO (mg/L)": "—", "Carga Másica (kg/h)": "—", "Carga Diaria (kg/d)": "—", "Estado ISA": "Normal" if blanket_val <= 1.6 else "Alerta Manto"},
-        {"Corriente": "5. Efluente Final Tratado", "Tag / Punto": "Vertedero / AIT-401", "Caudal (m³/h)": f"{q_in:.1f}", "DBO₅ (mg/L)": f"{bod_out:.2f}", "DQO (mg/L)": f"{bod_out*2.1:.1f}", "Carga Másica (kg/h)": f"{load_bod_out_kgh:.2f}", "Carga Diaria (kg/d)": f"{load_bod_out_kgh*24:,.1f}", "Estado ISA": status_label[:14]}
+        {"Corriente": "1. Afluente Crudo", "Origen / Destino": "Rejas T-101 &rarr; DAF-102", "Caudal (m³/h)": f"{q_in:.1f}", "DBO₅ (mg/L)": f"{bod_in:.1f}", "DQO (mg/L)": f"{cod_in:.1f}", "Sólidos SST (mg/L)": f"{tss_in:.1f}", "Carga Másica (kg/h)": f"{load_bod_in_kgh:.2f}", "Estado ISA": "Normal"},
+        {"Corriente": "2. Salida Clarificada DAF", "Origen / Destino": "DAF-102 &rarr; Anóxico R-201A", "Caudal (m³/h)": f"{q_in*0.98:.1f}", "DBO₅ (mg/L)": f"{bod_daf_out:.1f}", "DQO (mg/L)": f"{cod_daf_out:.1f}", "Sólidos SST (mg/L)": f"{tss_daf_out:.1f}", "Carga Másica (kg/h)": f"{(q_in*0.98*bod_daf_out)/1000:.2f}", "Estado ISA": "Normal (Libre de Grasas)"},
+        {"Corriente": "3. Retorno Lodos (RAS)", "Origen / Destino": "Clarificador C-301 &rarr; R-201A", "Caudal (m³/h)": f"{ras_val:.1f}", "DBO₅ (mg/L)": "Biomasa Retorno", "DQO (mg/L)": "—", "Sólidos SST (mg/L)": f"{mlss_val*2.2:.0f}", "Carga Másica (kg/h)": "—", "Estado ISA": "Activo"},
+        {"Corriente": "4. Licor Mezcla Aerobio", "Origen / Destino": "Reactor R-201B (4,050 m³)", "Caudal (m³/h)": f"{q_in + ras_val:.1f}", "DBO₅ (mg/L)": f"DO: {do_val:.2f}", "DQO (mg/L)": f"MLSS: {mlss_val:.0f}", "Sólidos SST (mg/L)": f"{mlss_val:.0f}", "Carga Másica (kg/h)": f"HRT: {hrt_val:.2f} h", "Estado ISA": "Óptimo" if 1.8 <= do_val <= 2.2 else "Alerta"},
+        {"Corriente": "5. Purga Lodos Biológicos (WAS)", "Origen / Destino": "Clarificador C-301 &rarr; Espesador", "Caudal (m³/h)": f"{was_val:.1f}", "DBO₅ (mg/L)": f"Manto: {blanket_val:.2f} m", "DQO (mg/L)": "—", "Sólidos SST (mg/L)": f"{mlss_val*2.5:.0f}", "Carga Másica (kg/h)": "—", "Estado ISA": "Normal" if blanket_val <= 1.6 else "Alerta Manto"},
+        {"Corriente": "6. Lodo Flotado DAF", "Origen / Destino": "Tolva DAF &rarr; Deshidratación", "Caudal (m³/h)": f"{q_in*0.02:.1f}", "DBO₅ (mg/L)": "Lodo Primario", "DQO (mg/L)": "Grasas > 85%", "Sólidos SST (mg/L)": "35,000", "Carga Másica (kg/h)": "—", "Estado ISA": "Activo"},
+        {"Corriente": "7. Efluente Final Tratado", "Origen / Destino": "Vertedero C-301 &rarr; Descarga", "Caudal (m³/h)": f"{q_in:.1f}", "DBO₅ (mg/L)": f"{bod_out:.2f}", "DQO (mg/L)": f"{bod_out*2.1:.1f}", "Sólidos SST (mg/L)": "18.5", "Carga Másica (kg/h)": f"{load_bod_out_kgh:.2f}", "Estado ISA": status_label[:14]}
     ])
     st.dataframe(streams_df, width="stretch", hide_index=True)
 
@@ -786,19 +846,21 @@ with tab4:
         vfd_est = 46.0 * (air_flow / 6.68)
         report_txt = f"""
 ========================================================================================
-BOLETA DE CONTROL Y DESPACHO OPERATIVO // PLANTA PTAR 4,050 m³
+BOLETA DE CONTROL Y DESPACHO OPERATIVO // PLANTA PTAR INDUSTRIAL
 PROCEDIMIENTO OPERATIVO ESTÁNDAR: POE-OP-PTAR-001
 RESPONSABLE TÉCNICO: Ing. Angelo Apolo (Jefe de Planta / Ing. de Procesos)
 ========================================================================================
-1. ESTADO DE TELEMETRÍA Y VARIABLES DE PROCESO
+1. ESTADO DE TELEMETRÍA Y VARIABLES DEL TREN DE PROCESO
    - Caudal de Entrada (FIT-101):         {q_in:.1f} m³/h
    - Carga Orgánica Entrada (AIT-102):     {bod_in:.1f} mg/L ({load_bod_in_kgh:.1f} kg DBO/h)
    - Concentración Biomasa (MLSS-204):     {mlss_val:.0f} mg/L
    - Tiempo de Retención Hidráulica:       {hrt_val:.2f} horas
    - Relación Alimento/Microorganismo:     {fm_ratio:.3f} kg DBO/kg MLSS·d
+   - Estado de Pre-tratamiento:           DAF Operativo (Remoción GyA activa)
+   - Estado de Desnitrificación:          Selector Anóxico R-201A Estable (DO &approx; 0.1 mg/L)
 
 2. DIAGNÓSTICO PREDICTIVO DEL SENSOR VIRTUAL (XGBOOST)
-   - Oxígeno Disuelto Actual (AIT-201):   {do_val:.2f} mg/L
+   - Oxígeno Disuelto Reactor (AIT-201):  {do_val:.2f} mg/L
    - Proyección DBO Efluente (AIT-401):    {bod_out:.2f} mg/L
    - Límite Legal Normativo (TULSMA):     20.0 mg/L
    - Dictamen Normativo:                  {status_label}
@@ -822,4 +884,4 @@ Certificación: Parámetros validados mediante modelo predictivo y balances de m
 
 # Pie de página industrial
 st.markdown("---")
-st.caption("PTAR DIGITAL TWIN v2.1 // SISTEMA SCADA DE ALTO RENDIMIENTO ISA-101 // ING. ANGELO APOLO")
+st.caption("PTAR DIGITAL TWIN v2.2 // SISTEMA SCADA DE ALTO RENDIMIENTO ISA-101 // ING. ANGELO APOLO")
