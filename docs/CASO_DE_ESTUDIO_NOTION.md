@@ -3,7 +3,7 @@
 > **Ficha del Proyecto para Portafolio Profesional**  
 > **Candidato:** Angelo Apolo | Ing. Químico / Industrial | Máster en Dirección de Proyectos y Empresas  
 > **Puestos Objetivo:** Jefe de Planta, Ingeniero de Procesos, Supervisor de Operaciones / Utilidades, Coordinador de Calidad y HSE  
-> **Enlaces Rápidos:** [Repositorio GitHub](#) | [Simulador Web en Vivo](#) | [Procedimiento POE en PDF](#)
+> **Enlaces Rápidos:** [Repositorio GitHub](https://github.com/32456344567/01_Optimizacion_PTAR_Efluentes) | [Simulador Web en Vivo](#) | [Procedimiento POE en PDF](https://github.com/32456344567/01_Optimizacion_PTAR_Efluentes/blob/main/entregables_planta/POE_Control_Operativo_PTAR.md)
 
 ---
 
