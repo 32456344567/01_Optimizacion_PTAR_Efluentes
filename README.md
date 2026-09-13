@@ -83,7 +83,8 @@ Cuadro de mando para la gerencia de planta y directores de operaciones: desglose
 
 ## 📁 5. Estructura del Repositorio
 
-```text
+├── Procfile                               # Despliegue en producción Railway (Streamlit)
+├── requirements.txt                       # Dependencias globales (DuckDB, XGBoost, Plotly)
 ├── data/
 │   ├── README_DATA.md                     # Diccionario técnico y rangos de sensores
 │   └── wwtp_time_series_data.csv          # Serie temporal de 80,000 registros (5 min)
@@ -95,37 +96,41 @@ Cuadro de mando para la gerencia de planta y directores de operaciones: desglose
 │   ├── modelo_ptar_xgboost.joblib         # Modelo serializado de inferencia
 │   └── features_ptar.joblib               # Esquema de características de entrada
 ├── app/
-│   ├── app.py                             # Gemelo Digital / Simulador en Streamlit y Plotly
-│   ├── requirements.txt                   # Dependencias para despliegue web
-│   └── Procfile                           # Configuración de ejecución en producción (Railway)
+│   ├── app.py                             # Plataforma Web SCADA, Motor SQL & Gemelo Digital
+│   ├── requirements.txt                   # Dependencias para contenedor de producción
+│   └── Procfile                           # Configuración de ejecución en Railway
 ├── powerbi/
 │   ├── background_pagina_01.png           # Plantilla Canvas Background 1920x1080 (Operaciones)
 │   ├── background_pagina_02.png           # Plantilla Canvas Background 1920x1080 (Energía y OPEX)
-│   ├── capturas_dashboard/                # Capturas de alta definición del tablero final
-│   ├── dataset_ptar_dashboard.csv         # Dataset procesado para Business Intelligence
-│   └── especificaciones_dashboard.md     # Medidas DAX y arquitectura de pantallas SCADA
+│   ├── capturas_dashboard/                # Capturas ejecutivas de alta definición
+│   ├── dataset_ptar_dashboard.csv         # Dataset oficial de telemetría (80,000 registros)
+│   └── especificaciones_dashboard.md     # Medidas DAX y arquitectura dimensional
 └── entregables_planta/
     └── POE_Control_Operativo_PTAR.md      # Procedimiento Operativo Estándar POE-OP-PTAR-001
 ```
 
 ---
 
-## 💻 5. Instrucciones de Ejecución Local
+## 🚀 6. Despliegue y Ejecución
 
-### Prerrequisitos
-Tener instalado Python 3.10 o superior y un gestor de entornos virtuales.
-
+### Ejecución Local
 ```bash
 # 1. Clonar el repositorio
 git clone https://github.com/32456344567/01_Optimizacion_PTAR_Efluentes.git
 cd 01_Optimizacion_PTAR_Efluentes
 
-# 2. Instalar dependencias
-pip install -r app/requirements.txt
+# 2. Instalar dependencias con soporte SQL DuckDB
+pip install -r requirements.txt
 
-# 3. Iniciar el simulador interactivo (Gemelo Digital)
+# 3. Iniciar la Plataforma Web SCADA & Analítica SQL
 streamlit run app/app.py
 ```
+
+### Despliegue en la Nube (Railway)
+El repositorio se encuentra pre-configurado para despliegue en un clic:
+1. Conectar el repositorio de GitHub en [Railway.app](https://railway.app).
+2. Railway auto-detectará el `Procfile` e instalará `requirements.txt` automáticamente.
+3. La aplicación se publicará bajo una URL pública de alta disponibilidad (ej. `https://ptar-optimizacion.up.railway.app`) con motor SQL DuckDB en memoria ejecutándose en tiempo real.
 
 ---
 *Documentación técnica de ingeniería desarrollada por Ing. Angelo Apolo.*
