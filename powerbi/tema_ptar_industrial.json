@@ -1,0 +1,69 @@
+{
+  "name": "PTAR Industrial Theme",
+  "dataColors": [
+    "#1E3A8A",
+    "#10B981",
+    "#38BDF8",
+    "#F59E0B",
+    "#64748B",
+    "#EF4444",
+    "#0EA5E9",
+    "#8B5CF6"
+  ],
+  "background": "#F1F5F9",
+  "foreground": "#0F172A",
+  "tableAccent": "#1E3A8A",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#E2E8F0"
+              }
+            },
+            "radius": 8
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#000000"
+              }
+            },
+            "position": "BottomRight",
+            "transparency": 88,
+            "shadowBlur": 8,
+            "shadowDistance": 2
+          }
+        ],
+        "title": [
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#0F172A"
+              }
+            },
+            "fontFamily": "Segoe UI Semibold",
+            "fontSize": 11
+          }
+        ]
+      }
+    }
+  }
+}

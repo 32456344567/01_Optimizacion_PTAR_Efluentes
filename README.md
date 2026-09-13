@@ -65,7 +65,23 @@ Los resultados anualizados para una tarifa eléctrica industrial estándar de **
 
 ---
 
-## 📁 4. Estructura del Repositorio
+## 🖥️ 4. Dashboards Ejecutivos de Business Intelligence (Power BI)
+
+El proyecto cuenta con un sistema de doble panel de nivel ejecutivo desarrollado bajo estándares de visualización industrial **ISA-101**, integrando telemetría de planta en tiempo real con auditoría de costos y cumplimiento legal.
+
+### Vista 01: Supervisión SCADA, Control de Operaciones y Calidad de Efluentes
+Monitoreo continuo de caudal influyente ($753.05\text{ m}^3\text{/h}$), carga orgánica ($316.97\text{ mg/L}$ DBO), calidad de descarga ($14.74\text{ mg/L}$ DBO) y tasa de cumplimiento del límite máximo permisible TULSMA Libro VI ($98.17\%$).
+
+![Dashboard Vista 01 - Operaciones SCADA](powerbi/capturas_dashboard/dashboard_page_01_operaciones_scada.png)
+
+### Vista 02: Eficiencia Energética, Costos OPEX y Sostenibilidad ESG
+Cuadro de mando para la gerencia de planta y directores de operaciones: desglose mensual de facturación eléctrica ($206,721\text{ USD}$ optimizado vs $\$215,266\text{ USD}$ base), ahorro neto anualizado ($+\$8,545\text{ USD}$), curva de histéresis de sobredosis de aireación y descarbonización auditada ($39.04\text{ Ton CO}_2\text{ eq/año}$).
+
+![Dashboard Vista 02 - Eficiencia Energética y Costos](powerbi/capturas_dashboard/dashboard_page_02_energia_opex_esg.png)
+
+---
+
+## 📁 5. Estructura del Repositorio
 
 ```text
 ├── data/
@@ -83,6 +99,9 @@ Los resultados anualizados para una tarifa eléctrica industrial estándar de **
 │   ├── requirements.txt                   # Dependencias para despliegue web
 │   └── Procfile                           # Configuración de ejecución en producción (Railway)
 ├── powerbi/
+│   ├── background_pagina_01.png           # Plantilla Canvas Background 1920x1080 (Operaciones)
+│   ├── background_pagina_02.png           # Plantilla Canvas Background 1920x1080 (Energía y OPEX)
+│   ├── capturas_dashboard/                # Capturas de alta definición del tablero final
 │   ├── dataset_ptar_dashboard.csv         # Dataset procesado para Business Intelligence
 │   └── especificaciones_dashboard.md     # Medidas DAX y arquitectura de pantallas SCADA
 └── entregables_planta/
