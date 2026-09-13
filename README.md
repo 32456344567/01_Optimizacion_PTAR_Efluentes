@@ -16,12 +16,16 @@ A pesar del elevado consumo energético, la planta experimentaba **$1,465$ event
 
 ```mermaid
 flowchart LR
-    A[Afluente Cruto<br/>Q = 753 m³/h<br/>DBO = 317 mg/L] --> B[Tanque de Aireación<br/>V = 4,050 m³<br/>MLSS = 3,500 mg/L]
-    B --> C[Clarificador Secundario<br/>Decantación de Lodos]
-    C --> D[Efluente Tratado<br/>Norma TULSMA<br/>DBO <= 20 mg/L]
-    C -->|Recirculación RAS| B
+    A[Afluente Crudo<br/>Q = 753 m³/h<br/>DBO = 317 mg/L] --> T[Pre-tratamiento T-101<br/>Tamiz / Desbaste Grueso]
+    T --> DAF[Físico-Químico DAF-102<br/>Flotación Aire Disuelto<br/>Remoción Grasas ≥ 85%]
+    DAF -->|Lodo Flotado| L1[Gestión Lodos DAF]
+    DAF --> AN[Selector Anóxico R-201A<br/>Pre-desnitrificación<br/>NO₃⁻ → N₂↑]
+    AN --> B[Reactor Aerobio R-201B<br/>V = 4,050 m³<br/>MLSS = 3,500 mg/L]
+    B --> C[Clarificador Secundario C-301<br/>Decantación de Biomasa]
+    C --> D[Efluente Tratado<br/>Norma TULSMA Tabla 9<br/>DBO ≤ 20 mg/L]
+    C -->|Recirculación RAS| AN
     C -->|Purga WAS| E[Tratamiento de Lodos]
-    F[Sopladores / VFD<br/>Consumo Eléctrico] -->|Inyección Aire| B
+    F[Sopladores Centrífugos K-201<br/>VFD Modulado // Consumo Crítico] -->|Inyección Aire| B
 ```
 
 ---
