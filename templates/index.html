@@ -561,52 +561,155 @@
         <!-- ================================================================= -->
         <div id="tab-gemelo" class="tab-content p-6 space-y-5 hidden">
             
+            <!-- Encabezado con Badges de Arquitectura -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
                 <div>
-                    <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Gemelo Digital & Simulador de Proceso ML (XGBoost)</h2>
+                    <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Gemelo Digital Híbrido & Simulador de Proceso PTAR</h2>
                     <p class="text-xs text-slate-500 font-medium mt-0.5">
-                        Diagrama de flujo de proceso dinámico (ISA-5.1) con inferencia predictiva de DBO de descarga en tiempo real
+                        Arquitectura Grey-Box (Física de Primeros Principios + Machine Learning XGBoost) en Biorreactor y Sedimentador Secundario
                     </p>
                 </div>
-                <div class="bg-blue-50 border border-blue-200 text-blue-800 text-xs px-3.5 py-1.5 rounded-lg font-medium">
-                    <i class="fa-solid fa-brain text-blue-600 mr-1.5"></i> Modelo XGBoost: R² = 0.963 | RMSE = 0.61 mg/L
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 shadow-xs">
+                        <i class="fa-solid fa-atom text-indigo-600"></i> Grey-Box PINN (Cinética + ML)
+                    </span>
+                    <span class="bg-blue-50 border border-blue-200 text-blue-800 text-xs px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 shadow-xs">
+                        <i class="fa-solid fa-brain text-blue-600"></i> XGBoost: R² = 0.963 | MAE = 1.62 mg/L
+                    </span>
                 </div>
             </div>
 
-            <!-- Controles de Simulación -->
+            <!-- Panel Racional Ejecutivo: ¿Por qué se construyó este Gemelo Digital? -->
+            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 rounded-xl p-5 text-white border border-slate-700 shadow-md">
+                <div class="flex items-start gap-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-microchip text-blue-400 text-xl"></i>
+                    </div>
+                    <div class="space-y-3 w-full">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                            <h3 class="text-sm font-extrabold text-white tracking-wide uppercase font-mono flex items-center gap-2">
+                                <span>Fundamento de Ingeniería & Valor para Gerencia / Operaciones</span>
+                                <span class="bg-blue-500/20 text-blue-300 text-[10px] px-2 py-0.5 rounded border border-blue-400/30 font-mono">SOFT-SENSOR ISA-5.1</span>
+                            </h3>
+                            <span class="text-[11px] text-slate-400 font-mono">Inferencia en Tiempo Real: &lt; 5 ms</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-300">
+                            <div class="bg-slate-800/80 rounded-lg p-3 border border-slate-700/80">
+                                <b class="text-amber-400 block mb-1 flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left"></i> El Reto del Laboratorio (5 Días)</b>
+                                El análisis normativo de DBO₅ (Standard Methods 5210B) exige <b>5 días continuos de incubación</b>. Operar una PTAR con un retraso analítico de 120 horas expone a la planta a multas ambientales severas o al despilfarro eléctrico por sobreaireación defensiva.
+                            </div>
+                            <div class="bg-slate-800/80 rounded-lg p-3 border border-slate-700/80">
+                                <b class="text-emerald-400 block mb-1 flex items-center gap-1.5"><i class="fa-solid fa-bolt"></i> Sensor Virtual en Tiempo Real</b>
+                                Este Gemelo Digital infiere instantáneamente la DBO de efluente a partir de telemetría física en línea (Caudal FIT-101, Carga Orgánica, Oxígeno AIT-201, Manto de Lodos), habilitando un <b>control en lazo cerrado</b> sin esperar los reportes de laboratorio.
+                            </div>
+                            <div class="bg-slate-800/80 rounded-lg p-3 border border-slate-700/80">
+                                <b class="text-cyan-400 block mb-1 flex items-center gap-1.5"><i class="fa-solid fa-shield-halved"></i> Simulador What-If Seguro</b>
+                                Permite al equipo de operaciones estresar virtualmente la planta (simular tormentas, aumentos de producción o paradas de soplador) para conocer el margen normativo sin arriesgar la microbiota del reactor (<b>4,050 m³</b>) ni la sedimentación del clarificador (<b>Ø 22 m</b>).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selector Rápido de Escenarios de Planta (1-Click Presets) -->
+            <div class="card-elevated p-4">
+                <div class="flex items-center justify-between mb-2.5">
+                    <label class="text-xs font-mono font-bold text-slate-700 flex items-center gap-2">
+                        <i class="fa-solid fa-play-circle text-blue-600"></i>
+                        <span>BANCO DE PRUEBAS DE INGENIERÍA — ESCENARIOS INDUSTRIALES PRECONFIGURADOS:</span>
+                    </label>
+                    <span class="text-[11px] font-mono text-slate-400">1-Clic para estresar el modelo predictivo</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                    <button type="button" onclick="setPresetScenario('nominal')"
+                        class="px-3 py-2 rounded-lg border border-emerald-300 bg-emerald-50/70 hover:bg-emerald-100 text-emerald-900 text-xs font-semibold text-left transition flex flex-col justify-between shadow-xs">
+                        <span class="flex items-center gap-1 text-[11px] text-emerald-700 font-mono">🟢 NOMINAL</span>
+                        <b class="text-xs mt-0.5">753 m³/h | DO 2.0</b>
+                        <span class="text-[10px] text-emerald-600 mt-0.5">Cumple TULSMA (15.3)</span>
+                    </button>
+                    <button type="button" onclick="setPresetScenario('ahorro')"
+                        class="px-3 py-2 rounded-lg border border-blue-300 bg-blue-50/70 hover:bg-blue-100 text-blue-900 text-xs font-semibold text-left transition flex flex-col justify-between shadow-xs">
+                        <span class="flex items-center gap-1 text-[11px] text-blue-700 font-mono">⚡ AHORRO ENERGÍA</span>
+                        <b class="text-xs mt-0.5">753 m³/h | DO 1.9</b>
+                        <span class="text-[10px] text-blue-600 mt-0.5">Ahorro $8,545/año</span>
+                    </button>
+                    <button type="button" onclick="setPresetScenario('overload15')"
+                        class="px-3 py-2 rounded-lg border border-amber-300 bg-amber-50/70 hover:bg-amber-100 text-amber-900 text-xs font-semibold text-left transition flex flex-col justify-between shadow-xs">
+                        <span class="flex items-center gap-1 text-[11px] text-amber-700 font-mono">⚠️ SOBRECARGA +15%</span>
+                        <b class="text-xs mt-0.5">865 m³/h | DO 2.0</b>
+                        <span class="text-[10px] text-amber-600 mt-0.5">Alerta Manto C-301</span>
+                    </button>
+                    <button type="button" onclick="setPresetScenario('overload30')"
+                        class="px-3 py-2 rounded-lg border border-rose-300 bg-rose-50/70 hover:bg-rose-100 text-rose-900 text-xs font-semibold text-left transition flex flex-col justify-between shadow-xs">
+                        <span class="flex items-center gap-1 text-[11px] text-rose-700 font-mono">🌊 TORMENTA +30%</span>
+                        <b class="text-xs mt-0.5">980 m³/h | DO 2.0</b>
+                        <span class="text-[10px] text-rose-600 mt-0.5">Lavado Hidráulico</span>
+                    </button>
+                    <button type="button" onclick="setPresetScenario('colapso10x')"
+                        class="px-3 py-2 rounded-lg border border-purple-400 bg-purple-50/70 hover:bg-purple-100 text-purple-950 text-xs font-semibold text-left transition flex flex-col justify-between shadow-xs">
+                        <span class="flex items-center gap-1 text-[11px] text-purple-700 font-mono">🚨 COLAPSO 10X</span>
+                        <b class="text-xs mt-0.5">7,530 m³/h | 10x</b>
+                        <span class="text-[10px] text-purple-600 mt-0.5">TRH 32m | 100% Lavado</span>
+                    </button>
+                    <button type="button" onclick="setPresetScenario('asfixia')"
+                        class="px-3 py-2 rounded-lg border border-slate-400 bg-slate-100 hover:bg-slate-200 text-slate-900 text-xs font-semibold text-left transition flex flex-col justify-between shadow-xs">
+                        <span class="flex items-center gap-1 text-[11px] text-slate-700 font-mono">🛑 ASFIXIA OD</span>
+                        <b class="text-xs mt-0.5">753 m³/h | DO 0.6</b>
+                        <span class="text-[10px] text-slate-600 mt-0.5">Falla Sopladores</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Controles de Simulación Dinámica -->
             <div class="card-elevated p-4 grid grid-cols-1 md:grid-cols-5 gap-4">
                 <div>
-                    <label class="block text-xs font-mono font-bold text-slate-500 mb-1">Caudal FIT-101 (m³/h):</label>
-                    <input type="number" id="sim-flow" value="753" min="400" max="1200" step="10" onchange="runSimulation()"
-                        class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800">
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-xs font-mono font-bold text-slate-600">Caudal FIT-101 (m³/h):</label>
+                        <span id="badge-flow-zone" class="text-[10px] px-1.5 py-0.5 rounded font-mono font-bold bg-emerald-100 text-emerald-800">Nominal</span>
+                    </div>
+                    <input type="number" id="sim-flow" value="753" min="300" max="8000" step="10" oninput="onFlowInputChange(); runSimulation()"
+                        class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <p class="text-[10px] text-slate-400 mt-1 font-mono">Diseño: 753 m³/h | Máx C-301: 836 m³/h</p>
                 </div>
                 <div>
-                    <label class="block text-xs font-mono font-bold text-slate-500 mb-1">DBO Entrada AIT-102 (mg/L):</label>
-                    <input type="number" id="sim-bod" value="317" min="150" max="500" step="5" onchange="runSimulation()"
-                        class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800">
+                    <label class="block text-xs font-mono font-bold text-slate-600 mb-1">DBO Entrada AIT-102 (mg/L):</label>
+                    <input type="number" id="sim-bod" value="317" min="150" max="600" step="5" oninput="runSimulation()"
+                        class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <p class="text-[10px] text-slate-400 mt-1 font-mono">Promedio histórico: 317.0 mg/L</p>
                 </div>
                 <div>
-                    <label class="block text-xs font-mono font-bold text-slate-500 mb-1">OD Reactor AIT-201 (mg/L): <span id="lbl-sim-do" class="text-blue-600 font-bold">2.0</span></label>
-                    <input type="range" id="sim-do" value="2.0" min="0.5" max="5.0" step="0.1" oninput="document.getElementById('lbl-sim-do').innerText=this.value; runSimulation()"
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-xs font-mono font-bold text-slate-600">OD AIT-201 (mg/L):</label>
+                        <span id="lbl-sim-do" class="text-xs font-mono font-bold text-blue-600">2.00</span>
+                    </div>
+                    <input type="range" id="sim-do" value="2.0" min="0.4" max="5.0" step="0.1"
+                        oninput="document.getElementById('lbl-sim-do').innerText=parseFloat(this.value).toFixed(2); runSimulation()"
                         class="w-full accent-blue-600 cursor-pointer">
+                    <p class="text-[10px] text-slate-400 mt-1 font-mono">Banda óptima: 1.8 - 2.2 mg/L</p>
                 </div>
                 <div>
-                    <label class="block text-xs font-mono font-bold text-slate-500 mb-1">Aire FIT-202 (km³/h): <span id="lbl-sim-air" class="text-teal-600 font-bold">6.68</span></label>
-                    <input type="range" id="sim-air" value="6.68" min="3.0" max="12.0" step="0.2" oninput="document.getElementById('lbl-sim-air').innerText=this.value; runSimulation()"
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-xs font-mono font-bold text-slate-600">Aire FIT-202 (km³/h):</label>
+                        <span id="lbl-sim-air" class="text-xs font-mono font-bold text-teal-600">6.68</span>
+                    </div>
+                    <input type="range" id="sim-air" value="6.68" min="2.0" max="14.0" step="0.2"
+                        oninput="document.getElementById('lbl-sim-air').innerText=parseFloat(this.value).toFixed(2); runSimulation()"
                         class="w-full accent-teal-600 cursor-pointer">
+                    <p class="text-[10px] text-slate-400 mt-1 font-mono">Sopladores K-201A/B</p>
                 </div>
                 <div>
-                    <label class="block text-xs font-mono font-bold text-slate-500 mb-1">Purga WAS (m³/h):</label>
-                    <input type="number" id="sim-was" value="12" min="5" max="25" step="0.5" onchange="runSimulation()"
-                        class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800">
+                    <label class="block text-xs font-mono font-bold text-slate-600 mb-1">Purga WAS FIT-302 (m³/h):</label>
+                    <input type="number" id="sim-was" value="12" min="5" max="30" step="0.5" oninput="runSimulation()"
+                        class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <p class="text-[10px] text-slate-400 mt-1 font-mono">Control edad lodo: SRT 12-15d</p>
                 </div>
             </div>
 
-            <!-- Vector PFD Animado -->
+            <!-- Vector PFD Animado SCADA Reactivo -->
             <div class="card-elevated p-5 bg-[#0A0E17] border-slate-800 text-white relative overflow-hidden rounded-xl">
                 <div class="text-xs font-mono font-bold text-slate-400 mb-2 flex items-center justify-between">
-                    <span>DIAGRAMA DE TUBERÍAS E INSTRUMENTACIÓN DINÁMICO (P&ID)</span>
-                    <span class="text-emerald-400 animate-pulse">● TELEMETRÍA DINÁMICA</span>
+                    <span>DIAGRAMA DE TUBERÍAS E INSTRUMENTACIÓN DINÁMICO (P&ID) — GEMELO DIGITAL GREY-BOX</span>
+                    <span id="pfd-status-pill" class="text-emerald-400 animate-pulse font-mono">● TELEMETRÍA DINÁMICA ACTIVA</span>
                 </div>
                 
                 <svg viewBox="0 0 1100 360" width="100%" height="340" xmlns="http://www.w3.org/2000/svg" class="select-none">
@@ -614,6 +717,7 @@
                         <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1E3A8A" stop-opacity="0.7"/><stop offset="100%" stop-color="#0F172A" stop-opacity="0.95"/></linearGradient>
                         <linearGradient id="anoxicGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#14532D" stop-opacity="0.6"/><stop offset="100%" stop-color="#064E3B" stop-opacity="0.9"/></linearGradient>
                         <linearGradient id="dafGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1E293B" stop-opacity="0.8"/><stop offset="100%" stop-color="#0F172A" stop-opacity="0.95"/></linearGradient>
+                        <linearGradient id="dangerClarifierGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7F1D1D" stop-opacity="0.85"/><stop offset="100%" stop-color="#450A0A" stop-opacity="0.95"/></linearGradient>
                     </defs>
 
                     <!-- Líneas de flujo -->
@@ -648,8 +752,15 @@
                     <circle cx="480" cy="300" r="18" fill="#1E293B" stroke="#2DD4BF" stroke-width="2"/>
                     <text x="480" y="332" text-anchor="middle" fill="#F8FAFC" font-size="9" font-weight="700">K-201A/B VFD</text>
 
-                    <polygon points="680,90 890,90 890,185 815,260 755,260 680,185" fill="url(#waterGrad)" stroke="#38BDF8" stroke-width="2"/>
+                    <!-- Clarificador C-301 Reactivo -->
+                    <polygon id="svg-clarifier-poly" points="680,90 890,90 890,185 815,260 755,260 680,185" fill="url(#waterGrad)" stroke="#38BDF8" stroke-width="2" class="transition-colors duration-300"/>
                     <text x="785" y="108" text-anchor="middle" fill="#F8FAFC" font-size="11" font-weight="700">C-301 CLARIFICADOR (Ø 22 m)</text>
+                    
+                    <!-- Alerta Dinámica Arrastre de Manto -->
+                    <g id="svg-clarifier-alert" class="hidden">
+                        <rect x="715" y="130" width="140" height="24" rx="4" fill="#7F1D1D" stroke="#EF4444" stroke-width="1.5"/>
+                        <text x="785" y="146" text-anchor="middle" fill="#FEF2F2" font-size="9" font-family="'JetBrains Mono', monospace" font-weight="800">⚠ ¡ARRASRE DE MANTO!</text>
+                    </g>
 
                     <!-- Tags de Proceso -->
                     <g transform="translate(45, 35)">
@@ -662,31 +773,112 @@
                         <text x="42.5" y="13" text-anchor="middle" fill="#94A3B8" font-size="7.5" font-family="'JetBrains Mono'">AIT-201 (DO)</text>
                         <text x="42.5" y="28" id="svg-do-val" text-anchor="middle" fill="#2DD4BF" font-size="10.5" font-weight="700">2.00 mg/L</text>
                     </g>
-                    <g transform="translate(940, 55)">
-                        <rect x="0" y="0" width="135" height="50" rx="6" fill="#0F172A" id="svg-pred-box" stroke="#10B981" stroke-width="2"/>
-                        <text x="67.5" y="15" text-anchor="middle" fill="#10B981" id="svg-pred-lbl" font-size="8.5" font-weight="700">DBO FINAL (XGBOOST)</text>
-                        <text x="67.5" y="38" id="svg-pred-val" text-anchor="middle" fill="#FFF" font-size="15" font-weight="800">14.74 mg/L</text>
+                    <g transform="translate(930, 55)">
+                        <rect x="0" y="0" width="145" height="50" rx="6" fill="#0F172A" id="svg-pred-box" stroke="#10B981" stroke-width="2"/>
+                        <text x="72.5" y="15" text-anchor="middle" fill="#10B981" id="svg-pred-lbl" font-size="8.5" font-weight="700">DBO FINAL (GREY-BOX)</text>
+                        <text x="72.5" y="38" id="svg-pred-val" text-anchor="middle" fill="#FFF" font-size="15" font-weight="800">15.30 mg/L</text>
                     </g>
                 </svg>
             </div>
 
-            <!-- Dictamen del Sensor Virtual -->
+            <!-- Fila 1: Dictamen del Sensor Virtual (3 Tarjetas Principales) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="card-elevated p-4 text-center">
                     <div class="text-xs font-mono text-slate-500 font-bold uppercase">DBO Efluente Predicha</div>
-                    <div id="res-pred-bod" class="text-3xl font-extrabold font-mono text-emerald-600 my-1">14.74 mg/L</div>
-                    <div id="res-delta" class="text-xs font-mono text-slate-500 font-medium">+5.26 mg/L de margen vs TULSMA</div>
+                    <div id="res-pred-bod" class="text-3xl font-extrabold font-mono text-emerald-600 my-1">15.30 mg/L</div>
+                    <div id="res-delta" class="text-xs font-mono text-slate-500 font-medium">+4.70 mg/L de margen vs TULSMA</div>
                 </div>
                 <div class="card-elevated p-4 text-center">
                     <div class="text-xs font-mono text-slate-500 font-bold uppercase">Eficiencia de Remoción</div>
-                    <div id="res-eff" class="text-3xl font-extrabold font-mono text-blue-600 my-1">95.4 %</div>
+                    <div id="res-eff" class="text-3xl font-extrabold font-mono text-blue-600 my-1">95.2 %</div>
                     <div class="text-xs font-mono text-slate-500 font-medium">Meta de diseño: &gt; 90.0%</div>
                 </div>
                 <div class="card-elevated p-4 text-center">
-                    <div class="text-xs font-mono text-slate-500 font-bold uppercase">Dictamen Normativo</div>
+                    <div class="text-xs font-mono text-slate-500 font-bold uppercase">Dictamen Normativo TULSMA</div>
                     <div id="res-status" class="text-2xl font-extrabold font-mono text-emerald-600 my-1">✔ CUMPLE TULSMA</div>
                     <div class="text-xs font-mono text-slate-500 font-medium">Límite Legal: DBO &le; 20.0 mg/L</div>
                 </div>
+            </div>
+
+            <!-- Fila 2: Métricas de Ingeniería Química & Hidráulica (Primeros Principios) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <!-- TRH -->
+                <div class="card-elevated p-4 border-l-4 border-l-blue-500">
+                    <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-500">
+                        <span>TRH BIORREACTOR</span>
+                        <span id="badge-diag-hrt" class="px-1.5 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800">Óptimo</span>
+                    </div>
+                    <div class="my-1.5 flex items-baseline gap-1">
+                        <span id="diag-hrt" class="text-2xl font-extrabold font-mono text-slate-800">5.38</span>
+                        <span class="text-xs font-mono text-slate-500">horas</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400">
+                        V = 4,050 m³ | Mín. Biológico: <b>4.0 h</b>
+                    </div>
+                </div>
+
+                <!-- Carga Superficial SOR -->
+                <div class="card-elevated p-4 border-l-4 border-l-teal-500">
+                    <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-500">
+                        <span>SOR CLARIFICADOR</span>
+                        <span id="badge-diag-sor" class="px-1.5 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800">Seguro</span>
+                    </div>
+                    <div class="my-1.5 flex items-baseline gap-1">
+                        <span id="diag-sor" class="text-2xl font-extrabold font-mono text-slate-800">1.98</span>
+                        <span class="text-xs font-mono text-slate-500">m/h</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400">
+                        Área = 380.1 m² | Límite Máx: <b>2.20 m/h</b>
+                    </div>
+                </div>
+
+                <!-- Relación F/M -->
+                <div class="card-elevated p-4 border-l-4 border-l-indigo-500">
+                    <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-500">
+                        <span>RELACIÓN F / M</span>
+                        <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700">Cinética</span>
+                    </div>
+                    <div class="my-1.5 flex items-baseline gap-1">
+                        <span id="diag-fm" class="text-2xl font-extrabold font-mono text-slate-800">0.404</span>
+                        <span class="text-xs font-mono text-slate-500">kg/kg·d</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400">
+                        Alimento / Microorganismo (MLSS 3500)
+                    </div>
+                </div>
+
+                <!-- Riesgo de Arrastre de Sólidos (Washout) -->
+                <div class="card-elevated p-4 border-l-4 border-l-amber-500 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-500">
+                        <span>RIESGO DE WASHOUT</span>
+                        <span id="diag-washout-lbl" class="px-1.5 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-mono">58.5%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-2.5 my-2 overflow-hidden">
+                        <div id="diag-washout-bar" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-300" style="width: 58.5%"></div>
+                    </div>
+                    <div class="text-[11px] text-slate-400 flex items-center justify-between">
+                        <span>TSS Vertedero: <b id="diag-tss" class="text-slate-700 font-mono">21.5 mg/L</b></span>
+                        <span class="font-mono text-[10px]">Meta &lt; 25</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Fila 3: Dictamen Físico-Químico y Diagnóstico Termodinámico de Planta -->
+            <div class="card-elevated p-4 bg-slate-50 border-slate-200">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-200 pb-2 mb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
+                        <span class="text-xs font-mono font-bold text-slate-700 uppercase">DIAGNÓSTICO INTEGRADO DE PROCESO & OPERACIONES:</span>
+                    </div>
+                    <div class="text-xs font-mono text-slate-600">
+                        Factor Limitante: <b id="diag-limiting" class="text-blue-700 font-bold">Ninguno (Balance Estable)</b>
+                    </div>
+                </div>
+                <p id="diag-message" class="text-xs font-medium text-slate-700 leading-relaxed font-sans">
+                    Operación biológica y sedimentación en régimen óptimo. Cumplimiento holgado TULSMA.
+                </p>
             </div>
 
         </div>
@@ -1040,16 +1232,65 @@
             }
         }
 
-        // 11. Simulación ML XGBoost
-        async function runSimulation() {
-            const flow = parseFloat(document.getElementById('sim-flow').value);
-            const bod = parseFloat(document.getElementById('sim-bod').value);
-            const doVal = parseFloat(document.getElementById('sim-do').value);
-            const air = parseFloat(document.getElementById('sim-air').value);
-            const was = parseFloat(document.getElementById('sim-was').value);
+        // Control dinámico de zonas de caudal en input
+        function onFlowInputChange() {
+            const flow = parseFloat(document.getElementById('sim-flow').value) || 0;
+            const badge = document.getElementById('badge-flow-zone');
+            if (!badge) return;
+            if (flow <= 835) {
+                badge.textContent = 'Nominal';
+                badge.className = 'text-[10px] px-1.5 py-0.5 rounded font-mono font-bold bg-emerald-100 text-emerald-800';
+            } else if (flow <= 950) {
+                badge.textContent = 'Alerta Manto (+15%)';
+                badge.className = 'text-[10px] px-1.5 py-0.5 rounded font-mono font-bold bg-amber-100 text-amber-800';
+            } else {
+                badge.textContent = 'Lavado Masivo (Washout)';
+                badge.className = 'text-[10px] px-1.5 py-0.5 rounded font-mono font-bold bg-rose-100 text-rose-800 animate-pulse';
+            }
+        }
 
-            document.getElementById('svg-flow-val').textContent = Math.round(flow) + ' m³/h';
-            document.getElementById('svg-do-val').textContent = doVal.toFixed(2) + ' mg/L';
+        // 1-Click Engineering Preset Scenarios
+        function setPresetScenario(type) {
+            const flowEl = document.getElementById('sim-flow');
+            const bodEl = document.getElementById('sim-bod');
+            const doEl = document.getElementById('sim-do');
+            const airEl = document.getElementById('sim-air');
+            const wasEl = document.getElementById('sim-was');
+            const lblDo = document.getElementById('lbl-sim-do');
+            const lblAir = document.getElementById('lbl-sim-air');
+
+            if (type === 'nominal') {
+                flowEl.value = 753; bodEl.value = 317; doEl.value = 2.0; airEl.value = 6.68; wasEl.value = 12.0;
+            } else if (type === 'ahorro') {
+                flowEl.value = 753; bodEl.value = 317; doEl.value = 1.9; airEl.value = 6.10; wasEl.value = 12.0;
+            } else if (type === 'overload15') {
+                flowEl.value = 865; bodEl.value = 317; doEl.value = 2.0; airEl.value = 6.68; wasEl.value = 12.0;
+            } else if (type === 'overload30') {
+                flowEl.value = 980; bodEl.value = 317; doEl.value = 2.0; airEl.value = 7.50; wasEl.value = 14.0;
+            } else if (type === 'colapso10x') {
+                flowEl.value = 7530; bodEl.value = 317; doEl.value = 2.0; airEl.value = 6.68; wasEl.value = 12.0;
+            } else if (type === 'asfixia') {
+                flowEl.value = 753; bodEl.value = 317; doEl.value = 0.6; airEl.value = 3.50; wasEl.value = 12.0;
+            }
+
+            if (lblDo) lblDo.innerText = parseFloat(doEl.value).toFixed(2);
+            if (lblAir) lblAir.innerText = parseFloat(airEl.value).toFixed(2);
+            onFlowInputChange();
+            runSimulation();
+        }
+
+        // 11. Simulación Híbrida Grey-Box (Física + ML)
+        async function runSimulation() {
+            const flow = parseFloat(document.getElementById('sim-flow').value) || 753;
+            const bod = parseFloat(document.getElementById('sim-bod').value) || 317;
+            const doVal = parseFloat(document.getElementById('sim-do').value) || 2.0;
+            const air = parseFloat(document.getElementById('sim-air').value) || 6.68;
+            const was = parseFloat(document.getElementById('sim-was').value) || 12.0;
+
+            const svgFlow = document.getElementById('svg-flow-val');
+            const svgDo = document.getElementById('svg-do-val');
+            if (svgFlow) svgFlow.textContent = Math.round(flow) + ' m³/h';
+            if (svgDo) svgDo.textContent = doVal.toFixed(2) + ' mg/L';
 
             const payload = {
                 influent_flow: flow,
@@ -1067,34 +1308,151 @@
                 });
                 const data = await res.json();
 
-                document.getElementById('svg-pred-val').textContent = data.pred_bod.toFixed(2) + ' mg/L';
-                document.getElementById('res-pred-bod').textContent = data.pred_bod.toFixed(2) + ' mg/L';
-                document.getElementById('res-eff').textContent = data.removal_eff.toFixed(1) + ' %';
-                document.getElementById('res-delta').textContent = (data.delta_tulsma >= 0 ? '+' : '') + data.delta_tulsma.toFixed(2) + ' mg/L vs TULSMA';
+                // DBO and Normative KPI cards
+                const svgPred = document.getElementById('svg-pred-val');
+                const resPred = document.getElementById('res-pred-bod');
+                const resEff = document.getElementById('res-eff');
+                const resDelta = document.getElementById('res-delta');
 
+                if (svgPred) svgPred.textContent = data.pred_bod.toFixed(2) + ' mg/L';
+                if (resPred) resPred.textContent = data.pred_bod.toFixed(2) + ' mg/L';
+                if (resEff) resEff.textContent = data.removal_eff.toFixed(1) + ' %';
+                if (resDelta) resDelta.textContent = (data.delta_tulsma >= 0 ? '+' : '') + data.delta_tulsma.toFixed(2) + ' mg/L de margen vs TULSMA';
+
+                // First-Principles Chemical Engineering KPIs
+                const diagHrt = document.getElementById('diag-hrt');
+                const diagSor = document.getElementById('diag-sor');
+                const diagFm = document.getElementById('diag-fm');
+                const diagTss = document.getElementById('diag-tss');
+                const diagWashoutLbl = document.getElementById('diag-washout-lbl');
+                const diagWashoutBar = document.getElementById('diag-washout-bar');
+
+                if (diagHrt) diagHrt.textContent = data.hrt_hours.toFixed(2);
+                if (diagSor) diagSor.textContent = data.sor_mh.toFixed(2);
+                if (diagFm) diagFm.textContent = data.fm_ratio.toFixed(3);
+                if (diagTss) diagTss.textContent = data.tss_eff.toFixed(1) + ' mg/L';
+                if (diagWashoutLbl) diagWashoutLbl.textContent = data.washout_risk.toFixed(1) + '%';
+                if (diagWashoutBar) diagWashoutBar.style.width = Math.min(100, Math.max(5, data.washout_risk)) + '%';
+
+                // Badges for TRH and SOR
+                const badgeHrt = document.getElementById('badge-diag-hrt');
+                if (badgeHrt) {
+                    if (data.hrt_hours >= 4.5) {
+                        badgeHrt.textContent = 'Óptimo';
+                        badgeHrt.className = 'px-1.5 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-mono';
+                    } else if (data.hrt_hours >= 3.5) {
+                        badgeHrt.textContent = 'Bajo';
+                        badgeHrt.className = 'px-1.5 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-mono';
+                    } else {
+                        badgeHrt.textContent = 'Crítico';
+                        badgeHrt.className = 'px-1.5 py-0.5 rounded text-[10px] bg-rose-100 text-rose-800 font-mono animate-pulse';
+                    }
+                }
+
+                const badgeSor = document.getElementById('badge-diag-sor');
+                if (badgeSor) {
+                    if (data.sor_mh <= 2.0) {
+                        badgeSor.textContent = 'Seguro';
+                        badgeSor.className = 'px-1.5 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-mono';
+                    } else if (data.sor_mh <= 2.2) {
+                        badgeSor.textContent = 'Límite';
+                        badgeSor.className = 'px-1.5 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-mono';
+                    } else {
+                        badgeSor.textContent = 'Arrastre';
+                        badgeSor.className = 'px-1.5 py-0.5 rounded text-[10px] bg-rose-100 text-rose-800 font-mono animate-pulse';
+                    }
+                }
+
+                // Washout bar color
+                if (diagWashoutBar && diagWashoutLbl) {
+                    if (data.washout_risk < 62) {
+                        diagWashoutBar.className = 'bg-emerald-500 h-2.5 rounded-full transition-all duration-300';
+                        diagWashoutLbl.className = 'px-1.5 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-mono';
+                    } else if (data.washout_risk < 75) {
+                        diagWashoutBar.className = 'bg-amber-500 h-2.5 rounded-full transition-all duration-300';
+                        diagWashoutLbl.className = 'px-1.5 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-mono';
+                    } else {
+                        diagWashoutBar.className = 'bg-rose-600 h-2.5 rounded-full transition-all duration-300';
+                        diagWashoutLbl.className = 'px-1.5 py-0.5 rounded text-[10px] bg-rose-100 text-rose-800 font-mono';
+                    }
+                }
+
+                // Diagnostic Message and Limiting Factor
+                const diagLimiting = document.getElementById('diag-limiting');
+                const diagMessage = document.getElementById('diag-message');
+                if (diagLimiting) diagLimiting.textContent = data.limiting_factor;
+                if (diagMessage) diagMessage.textContent = data.diagnosis;
+
+                // Status & Visual PFD Elements
                 const statusEl = document.getElementById('res-status');
                 const predBox = document.getElementById('svg-pred-box');
                 const predLbl = document.getElementById('svg-pred-lbl');
                 const effLine = document.getElementById('svg-eff-line');
+                const clarifierPoly = document.getElementById('svg-clarifier-poly');
+                const clarifierAlert = document.getElementById('svg-clarifier-alert');
+                const pfdPill = document.getElementById('pfd-status-pill');
 
                 if (data.status === 'OPTIMO') {
-                    statusEl.textContent = '✔ CUMPLE TULSMA';
-                    statusEl.className = 'text-2xl font-extrabold font-mono text-emerald-600 my-1';
-                    predBox.setAttribute('stroke', '#10B981');
-                    predLbl.setAttribute('fill', '#10B981');
-                    effLine.setAttribute('stroke', '#10B981');
+                    if (statusEl) {
+                        statusEl.textContent = '✔ CUMPLE TULSMA';
+                        statusEl.className = 'text-2xl font-extrabold font-mono text-emerald-600 my-1';
+                    }
+                    if (predBox) {
+                        predBox.setAttribute('stroke', '#10B981');
+                        predBox.setAttribute('fill', '#0F172A');
+                    }
+                    if (predLbl) predLbl.setAttribute('fill', '#10B981');
+                    if (effLine) effLine.setAttribute('stroke', '#10B981');
+                    if (clarifierPoly) {
+                        clarifierPoly.setAttribute('fill', 'url(#waterGrad)');
+                        clarifierPoly.setAttribute('stroke', '#38BDF8');
+                    }
+                    if (clarifierAlert) clarifierAlert.classList.add('hidden');
+                    if (pfdPill) {
+                        pfdPill.textContent = '● TELEMETRÍA DINÁMICA: RÉGIMEN ESTABLE';
+                        pfdPill.className = 'text-emerald-400 font-mono';
+                    }
                 } else if (data.status === 'ALERTA') {
-                    statusEl.textContent = '⚠ ALERTA PREVENTIVA';
-                    statusEl.className = 'text-2xl font-extrabold font-mono text-amber-500 my-1';
-                    predBox.setAttribute('stroke', '#F59E0B');
-                    predLbl.setAttribute('fill', '#F59E0B');
-                    effLine.setAttribute('stroke', '#F59E0B');
+                    if (statusEl) {
+                        statusEl.textContent = '⚠ ALERTA PREVENTIVA';
+                        statusEl.className = 'text-2xl font-extrabold font-mono text-amber-500 my-1';
+                    }
+                    if (predBox) {
+                        predBox.setAttribute('stroke', '#F59E0B');
+                        predBox.setAttribute('fill', '#0F172A');
+                    }
+                    if (predLbl) predLbl.setAttribute('fill', '#F59E0B');
+                    if (effLine) effLine.setAttribute('stroke', '#F59E0B');
+                    if (clarifierPoly && data.sor_mh > 2.0) {
+                        clarifierPoly.setAttribute('stroke', '#F59E0B');
+                    }
+                    if (clarifierAlert) clarifierAlert.classList.add('hidden');
+                    if (pfdPill) {
+                        pfdPill.textContent = '▲ TELEMETRÍA DINÁMICA: ATENCIÓN REQUERIDA';
+                        pfdPill.className = 'text-amber-400 font-mono font-bold';
+                    }
                 } else {
-                    statusEl.textContent = '✖ FUERA DE NORMA';
-                    statusEl.className = 'text-2xl font-extrabold font-mono text-rose-600 my-1';
-                    predBox.setAttribute('stroke', '#EF4444');
-                    predLbl.setAttribute('fill', '#EF4444');
-                    effLine.setAttribute('stroke', '#EF4444');
+                    if (statusEl) {
+                        statusEl.textContent = '✖ FUERA DE NORMA';
+                        statusEl.className = 'text-2xl font-extrabold font-mono text-rose-600 my-1';
+                    }
+                    if (predBox) {
+                        predBox.setAttribute('stroke', '#EF4444');
+                        predBox.setAttribute('fill', '#450A0A');
+                    }
+                    if (predLbl) predLbl.setAttribute('fill', '#FCA5A5');
+                    if (effLine) effLine.setAttribute('stroke', '#EF4444');
+                    if (clarifierPoly && data.sor_mh > 2.2) {
+                        clarifierPoly.setAttribute('fill', 'url(#dangerClarifierGrad)');
+                        clarifierPoly.setAttribute('stroke', '#EF4444');
+                    }
+                    if (clarifierAlert && data.sor_mh > 2.2) {
+                        clarifierAlert.classList.remove('hidden');
+                    }
+                    if (pfdPill) {
+                        pfdPill.textContent = '✖ ALERTA SCADA: PROCESO FUERA DE NORMA';
+                        pfdPill.className = 'text-rose-500 font-mono font-bold animate-pulse';
+                    }
                 }
             } catch (e) {
                 console.error("Error in simulation:", e);
@@ -1163,6 +1521,7 @@
             loadTimeseriesChart();
             loadClarifierChart();
             loadDonutChart();
+            onFlowInputChange();
             runSimulation();
         });
     </script>
