@@ -831,10 +831,10 @@
                 document.getElementById('kpi-load-in').innerText = dKpi.load_in_kgh.toLocaleString('en-US', {minimumFractionDigits: 1}) + ' kg DBO/h';
                 document.getElementById('kpi-bod-out').innerText = dKpi.bod_out.toLocaleString('en-US', {minimumFractionDigits: 2});
                 document.getElementById('kpi-comp-pct').innerText = dKpi.comp_pct.toFixed(2);
-                document.getElementById('kpi-records-text').innerText = (dKpi.total_rec - dKpi.out_rec).toLocaleString() + ' / ' + dKpi.total_rec.toLocaleString();
+                document.getElementById('kpi-records-text').innerText = (dKpi.total_rec - dKpi.out_rec).toLocaleString('en-US') + ' / ' + dKpi.total_rec.toLocaleString('en-US');
 
-                document.getElementById('kpi-fin-savings').innerText = '+$' + dKpi.savings_annual.toLocaleString() + ' USD/año';
-                document.getElementById('kpi-fin-period').innerText = '+$' + dKpi.savings_period.toLocaleString() + ' USD';
+                document.getElementById('kpi-fin-savings').innerText = '+$' + dKpi.savings_annual.toLocaleString('en-US', {maximumFractionDigits: 0}) + ' USD/año';
+                document.getElementById('kpi-fin-period').innerText = '+$' + dKpi.savings_period.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' USD';
                 document.getElementById('kpi-fin-opex').innerText = dKpi.opex_pct.toFixed(2) + '%';
                 document.getElementById('kpi-fin-sec').innerText = dKpi.sec_opt.toFixed(3);
                 document.getElementById('kpi-fin-co2').innerText = dKpi.co2_annual.toFixed(2);
