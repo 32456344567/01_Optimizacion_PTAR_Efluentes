@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTAR Industrial 4,050 m³ | SCADA Executive Dashboard</title>
+    <!-- Google Fonts Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ApexCharts CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        scada: {
+                            sidebar: '#0A1120',
+                            card: '#0F172A',
+                            border: '#1E293B',
+                            accent: '#2563EB',
+                            emerald: '#10B981',
+                            amber: '#F59E0B',
+                            rose: '#EF4444',
+                            sky: '#0EA5E9'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
+            color: #0F172A;
+            overflow-x: hidden;
+        }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #F1F5F9; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+        /* Smooth card shadows */
+        .card-elevated {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            transition: box-shadow 0.2s ease;
+        }
+        .card-elevated:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Nav pill transitions */
+        .nav-tab-btn {
+            transition: all 0.2s ease;
+        }
+        .nav-tab-btn.active {
+            background-color: #2563EB;
+            color: #FFFFFF;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+        }
+        .nav-tab-btn:not(.active):hover {
+            background-color: rgba(255, 255, 255, 0.06);
+            color: #F8FAFC;
+        }
+
+        /* Process animations */
+        @keyframes flowLine {
+            from { stroke-dashoffset: 24; }
+            to { stroke-dashoffset: 0; }
+        }
+        .flow-line { stroke-dasharray: 6, 4; animation: flowLine 1.2s linear infinite; }
+        .air-line { stroke-dasharray: 5, 3; animation: flowLine 0.8s linear infinite; }
+        .sludge-line { stroke-dasharray: 6, 6; animation: flowLine 2s linear infinite; }
+        @keyframes bubbleRise {
+            0% { transform: translateY(0); opacity: 0.2; }
+            50% { opacity: 0.9; }
+            100% { transform: translateY(-40px); opacity: 0; }
+        }
+        .bubble { animation: bubbleRise 2s infinite ease-in; }
+        @keyframes rotateMixer {
+            100% { transform: rotate(360deg); }
+        }
+        .mixer-spin { transform-origin: center; animation: rotateMixer 3s linear infinite; }
+    </style>
+</head>
+<body class="flex h-screen w-screen overflow-hidden">
+
+    <!-- ===================================================================== -->
+    <!-- 1. BARRA LATERAL SCADA (DARK NAVY - ISA 101 GRADE)                   -->
+    <!-- ===================================================================== -->
+    <aside class="w-80 flex-shrink-0 bg-[#0A1120] text-slate-300 flex flex-col justify-between border-r border-slate-800 z-20 overflow-y-auto">
+        
+        <!-- Header & Menús -->
+        <div class="p-5 space-y-6">
+            
+            <!-- Logo & Identificador de Planta -->
+            <div>
+                <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-sky-500/10 border border-sky-400/30 text-sky-400 text-xs font-mono font-bold tracking-wide">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    PTAR INDUSTRIAL 4,050 m³
+                </div>
+                <h1 class="text-white text-lg font-extrabold tracking-tight mt-2.5">SUPERVISIÓN SCADA</h1>
+                <p class="text-xs text-slate-400 font-medium">Monitoreo Operativo & Efluentes</p>
+            </div>
+
+            <!-- Navegación Ejecutiva -->
+            <div class="space-y-1.5">
+                <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold mb-2">Vistas del Tablero</div>
+                
+                <button onclick="switchTab('tab-operaciones')" id="btn-tab-operaciones" 
+                    class="nav-tab-btn active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-300 text-left">
+                    <i class="fa-solid fa-chart-line text-base w-5 text-center"></i>
+                    <span>01. Operación & Cumplimiento</span>
+                </button>
+
+                <button onclick="switchTab('tab-finanzas')" id="btn-tab-finanzas" 
+                    class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-300 text-left">
+                    <i class="fa-solid fa-bolt text-base w-5 text-center text-amber-400"></i>
+                    <span>02. Energía, OPEX & ESG</span>
+                </button>
+
+                <button onclick="switchTab('tab-gemelo')" id="btn-tab-gemelo" 
+                    class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-300 text-left">
+                    <i class="fa-solid fa-microchip text-base w-5 text-center text-emerald-400"></i>
+                    <span>03. Gemelo Digital & ML</span>
+                </button>
+
+                <button onclick="switchTab('tab-sql')" id="btn-tab-sql" 
+                    class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-300 text-left">
+                    <i class="fa-solid fa-database text-base w-5 text-center text-sky-400"></i>
+                    <span>04. Consola SQL DuckDB</span>
+                </button>
+            </div>
+
+            <!-- Filtro de Operación -->
+            <div class="space-y-2 pt-2 border-t border-slate-800/80">
+                <label class="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
+                    Filtro de Operación
+                </label>
+                <div class="relative">
+                    <select id="shiftFilter" onchange="onShiftChange()" 
+                        class="w-full bg-[#0F172A] border border-slate-700 text-white text-xs rounded-lg px-3 py-2.5 pr-8 focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none font-medium cursor-pointer">
+                        <option value="all">▼ Turnos de Operación: Completo (24h)</option>
+                        <option value="manana">Turno Mañana (06:00 - 14:00) [Pico Carga]</option>
+                        <option value="tarde">Turno Tarde (14:00 - 22:00) [Pico Demanda]</option>
+                        <option value="noche">Turno Noche (22:00 - 06:00) [Tarifa Valle]</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-400">
+                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Datos de Diseño (PTAR) -->
+            <div class="pt-2 border-t border-slate-800/80 space-y-2">
+                <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold">Datos de Diseño (PTAR)</div>
+                <div class="bg-[#0F172A]/80 border border-slate-800 rounded-lg p-3 space-y-1.5 text-xs">
+                    <div class="flex justify-between"><span class="text-slate-400">Capacidad:</span> <span class="font-mono text-slate-200">18,000 m³/día</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Vol. Aerobio:</span> <span class="font-mono text-slate-200">4,050 m³ (R-201B)</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Sopladores:</span> <span class="font-mono text-slate-200">2x 55 kW VFD</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Clarificador:</span> <span class="font-mono text-slate-200">Ø 22 m (C-301)</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Norma Legal:</span> <span class="font-mono text-emerald-400 font-semibold">TULSMA Libro VI</span></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer / Firma de Autor -->
+        <div class="p-5 border-t border-slate-800 bg-[#070B14]">
+            <div class="flex items-center gap-2 mb-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-[11px] font-mono text-emerald-400 font-bold uppercase tracking-wider">SCADA ONLINE • ISA-101</span>
+            </div>
+            <div class="text-sm font-bold text-white tracking-tight">Ing. Angelo Apolo</div>
+            <div class="text-[11px] text-slate-400">Ingeniero Químico | Esp. Procesos & Datos</div>
+        </div>
+    </aside>
+
+    <!-- ===================================================================== -->
+    <!-- 2. CONTENEDOR PRINCIPAL DE CONTENIDO (EXECUTIVE LIGHT CANVAS)        -->
+    <!-- ===================================================================== -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-[#F8FAFC]">
+
+        <!-- ================================================================= -->
+        <!-- TAB 1: OPERACIONES & CALIDAD DE EFLUENTES                         -->
+        <!-- ================================================================= -->
+        <div id="tab-operaciones" class="tab-content p-6 space-y-5">
+            
+            <!-- Banner Superior -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Control de Operaciones y Calidad de Efluentes</h2>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">
+                        Reactor Aerobio 4,050 m³ • Monitoreo Continuo vs Límite TULSMA (DBO &le; 20.0 mg/L) • Frecuencia 5-min
+                    </p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="bg-sky-50 border border-sky-200 text-sky-800 text-xs px-3.5 py-1.5 rounded-lg font-medium flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-shield-halved text-sky-600"></i>
+                        <span>Cumplimiento Legal TULSMA | Límite Máximo: <b>20.0 mg/L DBO</b></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fila de 4 Tarjetas KPI -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                
+                <!-- KPI 1: Caudal -->
+                <div class="card-elevated p-4 border-t-4 border-t-blue-500 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-500 tracking-wider">
+                        <span>CAUDAL MEDIO DE ENTRADA</span>
+                        <span class="text-slate-400">FIT-101</span>
+                    </div>
+                    <div class="my-2 flex items-baseline gap-2">
+                        <span id="kpi-q-in" class="text-3xl font-extrabold font-mono text-slate-900">753.05</span>
+                        <span class="text-xs font-mono text-slate-500">m³/h</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500">
+                        Volumen diario: <b id="kpi-q-daily" class="text-slate-700 font-mono">18,073 m³/d</b>
+                    </div>
+                </div>
+
+                <!-- KPI 2: DBO Entrada -->
+                <div class="card-elevated p-4 border-t-4 border-t-indigo-500 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-500 tracking-wider">
+                        <span>DBO₅ ENTRADA MEDIA</span>
+                        <span class="text-slate-400">AIT-102</span>
+                    </div>
+                    <div class="my-2 flex items-baseline gap-2">
+                        <span id="kpi-bod-in" class="text-3xl font-extrabold font-mono text-slate-900">316.97</span>
+                        <span class="text-xs font-mono text-slate-500">mg/L</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500">
+                        Carga orgánica: <b id="kpi-load-in" class="text-slate-700 font-mono">238.7 kg DBO/h</b>
+                    </div>
+                </div>
+
+                <!-- KPI 3: DBO Efluente -->
+                <div class="card-elevated p-4 border-t-4 border-t-emerald-500 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-500 tracking-wider">
+                        <span>DBO₅ EFLUENTE MEDIA</span>
+                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                            <i class="fa-solid fa-check text-[9px]"></i> CUMPLE
+                        </span>
+                    </div>
+                    <div class="my-2 flex items-baseline gap-2">
+                        <span id="kpi-bod-out" class="text-3xl font-extrabold font-mono text-emerald-600">14.74</span>
+                        <span class="text-xs font-mono text-slate-500">mg/L</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500">
+                        Meta legal: <b class="text-emerald-700 font-semibold">&le; 20.0 mg/L TULSMA</b>
+                    </div>
+                </div>
+
+                <!-- KPI 4: Tasa Cumplimiento -->
+                <div class="card-elevated p-4 border-t-4 border-t-teal-500 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-500 tracking-wider">
+                        <span>TASA CUMPLIMIENTO LEGAL</span>
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-teal-100 text-teal-800 text-[10px] font-bold">
+                            META &gt; 98%
+                        </span>
+                    </div>
+                    <div class="my-2 flex items-baseline gap-2">
+                        <span id="kpi-comp-pct" class="text-3xl font-extrabold font-mono text-slate-900">98.17</span>
+                        <span class="text-xs font-mono text-slate-500">%</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500">
+                        Registros conformes: <b id="kpi-records-text" class="text-slate-700 font-mono">78,535 / 80,000</b>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Gráfico Grande: Monitoreo Temporal DO vs DBO Efluente -->
+            <div class="card-elevated p-5">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800">Monitoreo Temporal de Oxígeno Disuelto (DO) vs DBO Efluente</h3>
+                        <p class="text-xs text-slate-400">Concentración de OD en Reactor (mg/L) y DBO Efluente (mg/L) contrastada contra el Límite TULSMA (20 mg/L)</p>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs font-medium text-slate-600 mt-2 md:mt-0">
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#1E3A8A]"></span> OD Reactor (mg/L)</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#10B981]"></span> DBO Efluente (mg/L)</span>
+                        <span class="flex items-center gap-1.5"><span class="w-4 h-0.5 bg-rose-500 border-dashed border-t-2 border-rose-500"></span> Límite TULSMA (20 mg/L)</span>
+                    </div>
+                </div>
+                <div id="chart-timeseries" class="w-full h-72"></div>
+            </div>
+
+            <!-- Fila Inferior: Clarificador C-301 & Donut de Cumplimiento -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                
+                <!-- Clarificador (7 cols) -->
+                <div class="lg:col-span-7 card-elevated p-5">
+                    <div class="mb-2">
+                        <h3 class="text-sm font-bold text-slate-800">Dinámica de Sedimentador Secundario (C-301)</h3>
+                        <p class="text-xs text-slate-400">Control de Manto de Lodos (m) vs Caudal de Purga WAS (m³/h) para prevención de arrastre de sólidos</p>
+                    </div>
+                    <div id="chart-clarifier" class="w-full h-64"></div>
+                </div>
+
+                <!-- Donut de Cumplimiento (5 cols) -->
+                <div class="lg:col-span-5 card-elevated p-5 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800">Distribución de Cumplimiento Legal</h3>
+                        <p class="text-xs text-slate-400">Eventos clasificados por semáforo ambiental TULSMA</p>
+                    </div>
+                    <div class="relative flex items-center justify-center my-auto">
+                        <div id="chart-donut" class="w-full h-64"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- TAB 2: ENERGÍA, OPEX & ESG                                        -->
+        <!-- ================================================================= -->
+        <div id="tab-finanzas" class="tab-content p-6 space-y-5 hidden">
+            
+            <!-- Banner Superior -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Eficiencia Energética, Costos OPEX & Sostenibilidad ESG</h2>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">
+                        Optimización de Sopladores K-201A/B • Reducción de Costo Específico (SEC) • Retorno de Inversión y Huella de Carbono
+                    </p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs px-3.5 py-1.5 rounded-lg font-medium flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-coins text-emerald-600"></i>
+                        <span>Evaluación Financiera CAPEX/OPEX | Payback: <b>8.4 meses</b> • TIR: <b>138%</b></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fila de 4 Tarjetas KPI Financieras -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                
+                <!-- KPI F1: Ahorro Neto -->
+                <div class="card-elevated p-4 border-t-4 border-t-emerald-500 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-500 tracking-wider">
+                        <span>AHORRO ECONÓMICO NETO</span>
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                            AHORRO NETO
+                        </span>
+                    </div>
+                    <div class="my-2 flex items-baseline gap-1">
+                        <span id="kpi-fin-savings" class="text-3xl font-extrabold font-mono text-emerald-600">+$8,545</span>
+                        <span class="text-xs font-mono text-slate-500">USD/año</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500">
+                        Auditado período: <b id="kpi-fin-period" class="text-slate-700 font-mono">+$6,503 USD</b>
+                    </div>
+                </div>
+
+                <!-- KPI F2: Reducción OPEX -->
+                <div class="card-elevated p-4 border-t-4 border-t-teal-500 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-500 tracking-wider">
+                        <span>REDUCCIÓN OPEX ELÉCTRICO</span>
+                        <span class="text-slate-400">Sopladores</span>
+                    </div>
+                    <div class="my-2 flex items-baseline gap-1">
+                        <span id="kpi-fin-opex" class="text-3xl font-extrabold font-mono text-emerald-600">3.92%</span>
+                        <span class="text-xs font-mono text-slate-500">OPEX</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500">
+                        Tarifa industrial: <b class="text-slate-700 font-mono">$0.092 USD/kWh</b>
+                    </div>
+                </div>
+
+                <!-- KPI F3: Consumo Específico -->
+                <div class="card-elevated p-4 border-t-4 border-t-blue-500 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-500 tracking-wider">
+                        <span>CONSUMO ESPECÍFICO (SEC)</span>
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold font-mono">
+                            BASE: 1.186
+                        </span>
+                    </div>
+                    <div class="my-2 flex items-baseline gap-1">
+                        <span id="kpi-fin-sec" class="text-3xl font-extrabold font-mono text-blue-600">1.139</span>
+                        <span class="text-xs font-mono text-slate-500">kWh/kg DBO</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500">
+                        Eficiencia energética: <b class="text-blue-700 font-semibold">-4.0% vs base</b>
+                    </div>
+                </div>
+
+                <!-- KPI F4: ESG Descarbonización -->
+                <div class="card-elevated p-4 border-t-4 border-t-purple-500 flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-500 tracking-wider">
+                        <span>DESCARBONIZACIÓN ESG</span>
+                        <span class="text-slate-400">CO₂ Reducido</span>
+                    </div>
+                    <div class="my-2 flex items-baseline gap-1">
+                        <span id="kpi-fin-co2" class="text-3xl font-extrabold font-mono text-purple-600">39.04</span>
+                        <span class="text-xs font-mono text-slate-500">Ton CO₂/año</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500">
+                        Factor de red: <b class="text-slate-700 font-mono">0.420 kg CO₂/kWh</b>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Fila 2: Comparativa Mensual & Curva de Sobredosis -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                
+                <!-- Facturación Mensual (7 cols) -->
+                <div class="lg:col-span-7 card-elevated p-5">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-800">Comparativa de Facturación Eléctrica Mensual ($ USD)</h3>
+                            <p class="text-xs text-slate-400">Costo Base Convencional vs Costo Optimizado mediante Machine Learning XGBoost</p>
+                        </div>
+                    </div>
+                    <div id="chart-monthly-billing" class="w-full h-64"></div>
+                </div>
+
+                <!-- Curva Sobredosis Aireación (5 cols) -->
+                <div class="lg:col-span-5 card-elevated p-5">
+                    <div class="mb-2">
+                        <h3 class="text-sm font-bold text-slate-800">Curva de Sobredosis de Aireación</h3>
+                        <p class="text-xs text-slate-400">Flujo de Aire (km³/h) vs OD (Banda Óptima 1.8 - 2.2 mg/L)</p>
+                    </div>
+                    <div id="chart-aeration-curve" class="w-full h-64"></div>
+                </div>
+
+            </div>
+
+            <!-- Fila 3: Distribución por Turno & Cuadro de Mando Financiero -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                
+                <!-- Ahorro por Turno (6 cols) -->
+                <div class="lg:col-span-6 card-elevated p-5">
+                    <div class="mb-2">
+                        <h3 class="text-sm font-bold text-slate-800">Distribución del Ahorro por Turno Operativo</h3>
+                        <p class="text-xs text-slate-400">Ahorro monetario en Turno Noche (Valle), Mañana (Pico) y Tarde (Pico)</p>
+                    </div>
+                    <div id="chart-shift-savings" class="w-full h-60"></div>
+                </div>
+
+                <!-- Tabla Cuadro de Mando Ejecutivo (6 cols) -->
+                <div class="lg:col-span-6 card-elevated p-5 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800">Cuadro de Mando Ejecutivo - Balances & Rentabilidad</h3>
+                        <p class="text-xs text-slate-400 mb-3">Consolidado de balances de masa y energía por metro cúbico tratado</p>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-slate-50 text-slate-500 uppercase font-mono text-[10px] border-b border-slate-200">
+                                    <tr>
+                                        <th class="py-2 px-3">Concepto Financiero / Impacto</th>
+                                        <th class="py-2 px-3 text-right">Valor Auditado</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 font-medium">
+                                    <tr class="hover:bg-slate-50/60">
+                                        <td class="py-2 px-3 text-slate-700">Inversión en Instrumentación & Control (CAPEX)</td>
+                                        <td class="py-2 px-3 text-right font-mono font-bold text-slate-900">$6,000 USD</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50/60 bg-emerald-50/30">
+                                        <td class="py-2 px-3 text-emerald-900 font-semibold">Ahorro Eléctrico Anual Neto (OPEX Reducido)</td>
+                                        <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">+$8,545 USD/año</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50/60">
+                                        <td class="py-2 px-3 text-slate-700">Período de Recuperación Simple (Payback)</td>
+                                        <td class="py-2 px-3 text-right font-mono font-bold text-blue-600">8.4 Meses</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50/60">
+                                        <td class="py-2 px-3 text-slate-700">Tasa Interna de Retorno (TIR a 5 años)</td>
+                                        <td class="py-2 px-3 text-right font-mono font-bold text-blue-600">138.2 %</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50/60">
+                                        <td class="py-2 px-3 text-slate-700">Valor Actual Neto (VAN al 12% a 5 años)</td>
+                                        <td class="py-2 px-3 text-right font-mono font-bold text-slate-900">$24,798 USD</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50/60">
+                                        <td class="py-2 px-3 text-slate-700">Reducción de Huella de Carbono ESG</td>
+                                        <td class="py-2 px-3 text-right font-mono font-bold text-purple-600">39.04 Ton CO₂/año</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- TAB 3: GEMELO DIGITAL & ML                                        -->
+        <!-- ================================================================= -->
+        <div id="tab-gemelo" class="tab-content p-6 space-y-5 hidden">
+            
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Gemelo Digital & Simulador de Proceso ML (XGBoost)</h2>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">
+                        Diagrama de flujo de proceso dinámico (ISA-5.1) con inferencia predictiva de DBO de descarga en tiempo real
+                    </p>
+                </div>
+                <div class="bg-blue-50 border border-blue-200 text-blue-800 text-xs px-3.5 py-1.5 rounded-lg font-medium">
+                    <i class="fa-solid fa-brain text-blue-600 mr-1.5"></i> Modelo XGBoost: R² = 0.963 | RMSE = 0.61 mg/L
+                </div>
+            </div>
+
+            <!-- Controles de Simulación -->
+            <div class="card-elevated p-4 grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div>
+                    <label class="block text-xs font-mono font-bold text-slate-500 mb-1">Caudal FIT-101 (m³/h):</label>
+                    <input type="number" id="sim-flow" value="753" min="400" max="1200" step="10" onchange="runSimulation()"
+                        class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono font-bold text-slate-500 mb-1">DBO Entrada AIT-102 (mg/L):</label>
+                    <input type="number" id="sim-bod" value="317" min="150" max="500" step="5" onchange="runSimulation()"
+                        class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono font-bold text-slate-500 mb-1">OD Reactor AIT-201 (mg/L): <span id="lbl-sim-do" class="text-blue-600 font-bold">2.0</span></label>
+                    <input type="range" id="sim-do" value="2.0" min="0.5" max="5.0" step="0.1" oninput="document.getElementById('lbl-sim-do').innerText=this.value; runSimulation()"
+                        class="w-full accent-blue-600 cursor-pointer">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono font-bold text-slate-500 mb-1">Aire FIT-202 (km³/h): <span id="lbl-sim-air" class="text-teal-600 font-bold">6.68</span></label>
+                    <input type="range" id="sim-air" value="6.68" min="3.0" max="12.0" step="0.2" oninput="document.getElementById('lbl-sim-air').innerText=this.value; runSimulation()"
+                        class="w-full accent-teal-600 cursor-pointer">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono font-bold text-slate-500 mb-1">Purga WAS (m³/h):</label>
+                    <input type="number" id="sim-was" value="12" min="5" max="25" step="0.5" onchange="runSimulation()"
+                        class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800">
+                </div>
+            </div>
+
+            <!-- Vector PFD Animado -->
+            <div class="card-elevated p-5 bg-[#0A0E17] border-slate-800 text-white relative overflow-hidden rounded-xl">
+                <div class="text-xs font-mono font-bold text-slate-400 mb-2 flex items-center justify-between">
+                    <span>DIAGRAMA DE TUBERÍAS E INSTRUMENTACIÓN DINÁMICO (P&ID)</span>
+                    <span class="text-emerald-400 animate-pulse">● TELEMETRÍA DINÁMICA</span>
+                </div>
+                
+                <svg viewBox="0 0 1100 360" width="100%" height="340" xmlns="http://www.w3.org/2000/svg" class="select-none">
+                    <defs>
+                        <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1E3A8A" stop-opacity="0.7"/><stop offset="100%" stop-color="#0F172A" stop-opacity="0.95"/></linearGradient>
+                        <linearGradient id="anoxicGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#14532D" stop-opacity="0.6"/><stop offset="100%" stop-color="#064E3B" stop-opacity="0.9"/></linearGradient>
+                        <linearGradient id="dafGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1E293B" stop-opacity="0.8"/><stop offset="100%" stop-color="#0F172A" stop-opacity="0.95"/></linearGradient>
+                    </defs>
+
+                    <!-- Líneas de flujo -->
+                    <path d="M 20 150 L 50 150" stroke="#38BDF8" stroke-width="4" fill="none" class="flow-line"/>
+                    <path d="M 100 150 L 130 150" stroke="#38BDF8" stroke-width="3.5" fill="none" class="flow-line"/>
+                    <path d="M 210 150 L 245 150" stroke="#38BDF8" stroke-width="3.5" fill="none" class="flow-line"/>
+                    <path d="M 320 150 L 350 150" stroke="#38BDF8" stroke-width="4" fill="none" class="flow-line"/>
+                    <path d="M 600 150 L 680 150" stroke="#38BDF8" stroke-width="4" fill="none" class="flow-line"/>
+                    <path d="M 890 135 L 970 135" stroke="#10B981" id="svg-eff-line" stroke-width="4" fill="none" class="flow-line"/>
+                    
+                    <!-- Línea de Aire -->
+                    <path d="M 480 300 L 480 220" stroke="#2DD4BF" stroke-width="3" fill="none" class="air-line"/>
+                    <!-- Retorno RAS y Purga WAS -->
+                    <path d="M 785 260 L 785 330 L 282 330 L 282 225" stroke="#F59E0B" stroke-width="2.5" fill="none" class="sludge-line"/>
+                    <path d="M 785 260 L 785 330 L 910 330" stroke="#EF4444" stroke-width="2.5" fill="none" class="sludge-line"/>
+
+                    <!-- Equipos Principales -->
+                    <!-- T-101 Desbaste -->
+                    <rect x="50" y="115" width="50" height="70" rx="3" fill="#1E293B" stroke="#475569" stroke-width="1.2"/>
+                    <text x="75" y="108" text-anchor="middle" fill="#94A3B8" font-size="8.5" font-family="'JetBrains Mono', monospace" font-weight="700">T-101 REJAS</text>
+
+                    <!-- DAF-102 -->
+                    <polygon points="130,110 210,110 210,175 185,195 155,195 130,175" fill="url(#dafGrad)" stroke="#38BDF8" stroke-width="1.5"/>
+                    <text x="170" y="102" text-anchor="middle" fill="#38BDF8" font-size="9" font-family="'JetBrains Mono', monospace" font-weight="700">DAF-102</text>
+
+                    <!-- R-201A Selector Anóxico -->
+                    <rect x="245" y="90" width="75" height="135" rx="4" fill="url(#anoxicGrad)" stroke="#10B981" stroke-width="1.5"/>
+                    <text x="282" y="105" text-anchor="middle" fill="#A7F3D0" font-size="8.5" font-family="'JetBrains Mono', monospace" font-weight="700">R-201A ANÓXICO</text>
+                    <g transform="translate(282,160)"><circle cx="0" cy="0" r="14" fill="#064E3B" stroke="#34D399"/><line x1="-10" y1="0" x2="10" y2="0" stroke="#34D399" stroke-width="2"/><line x1="0" y1="-10" x2="0" y2="10" stroke="#34D399" stroke-width="2"/></g>
+
+                    <!-- R-201B Reactor Aerobio 4050 m3 -->
+                    <rect x="350" y="80" width="250" height="145" rx="6" fill="url(#waterGrad)" stroke="#38BDF8" stroke-width="2"/>
+                    <text x="475" y="102" text-anchor="middle" fill="#F8FAFC" font-size="11" font-weight="700">R-201B REACTOR AEROBIO (4,050 m³)</text>
+                    <g class="bubble"><circle cx="400" cy="200" r="2.5" fill="#A7F3D0"/><circle cx="460" cy="195" r="3" fill="#A7F3D0"/><circle cx="540" cy="205" r="2.5" fill="#A7F3D0"/></g>
+
+                    <!-- Sopladores K-201A/B -->
+                    <circle cx="480" cy="300" r="18" fill="#1E293B" stroke="#2DD4BF" stroke-width="2"/>
+                    <text x="480" y="332" text-anchor="middle" fill="#F8FAFC" font-size="9" font-weight="700">K-201A/B VFD</text>
+
+                    <!-- C-301 Clarificador Secundario -->
+                    <polygon points="680,90 890,90 890,185 815,260 755,260 680,185" fill="url(#waterGrad)" stroke="#38BDF8" stroke-width="2"/>
+                    <text x="785" y="108" text-anchor="middle" fill="#F8FAFC" font-size="11" font-weight="700">C-301 CLARIFICADOR (Ø 22 m)</text>
+
+                    <!-- Tags de Proceso -->
+                    <g transform="translate(45, 35)">
+                        <rect x="0" y="0" width="85" height="34" rx="4" fill="#0F172A" stroke="#38BDF8"/>
+                        <text x="42.5" y="13" text-anchor="middle" fill="#94A3B8" font-size="7.5" font-family="'JetBrains Mono'">FIT-101</text>
+                        <text x="42.5" y="28" id="svg-flow-val" text-anchor="middle" fill="#FFF" font-size="10.5" font-weight="700">753 m³/h</text>
+                    </g>
+                    <g transform="translate(435, 25)">
+                        <rect x="0" y="0" width="85" height="34" rx="4" fill="#0F172A" stroke="#2DD4BF"/>
+                        <text x="42.5" y="13" text-anchor="middle" fill="#94A3B8" font-size="7.5" font-family="'JetBrains Mono'">AIT-201 (DO)</text>
+                        <text x="42.5" y="28" id="svg-do-val" text-anchor="middle" fill="#2DD4BF" font-size="10.5" font-weight="700">2.00 mg/L</text>
+                    </g>
+                    <g transform="translate(940, 55)">
+                        <rect x="0" y="0" width="135" height="50" rx="6" fill="#0F172A" id="svg-pred-box" stroke="#10B981" stroke-width="2"/>
+                        <text x="67.5" y="15" text-anchor="middle" fill="#10B981" id="svg-pred-lbl" font-size="8.5" font-weight="700">DBO FINAL (XGBOOST)</text>
+                        <text x="67.5" y="38" id="svg-pred-val" text-anchor="middle" fill="#FFF" font-size="15" font-weight="800">14.74 mg/L</text>
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Dictamen del Sensor Virtual -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="card-elevated p-4 text-center">
+                    <div class="text-xs font-mono text-slate-500 font-bold uppercase">DBO Efluente Predicha</div>
+                    <div id="res-pred-bod" class="text-3xl font-extrabold font-mono text-emerald-600 my-1">14.74 mg/L</div>
+                    <div id="res-delta" class="text-xs font-mono text-slate-500 font-medium">+5.26 mg/L de margen vs TULSMA</div>
+                </div>
+                <div class="card-elevated p-4 text-center">
+                    <div class="text-xs font-mono text-slate-500 font-bold uppercase">Eficiencia de Remoción</div>
+                    <div id="res-eff" class="text-3xl font-extrabold font-mono text-blue-600 my-1">95.4 %</div>
+                    <div class="text-xs font-mono text-slate-500 font-medium">Meta de diseño: &gt; 90.0%</div>
+                </div>
+                <div class="card-elevated p-4 text-center">
+                    <div class="text-xs font-mono text-slate-500 font-bold uppercase">Dictamen Normativo</div>
+                    <div id="res-status" class="text-2xl font-extrabold font-mono text-emerald-600 my-1">✔ CUMPLE TULSMA</div>
+                    <div class="text-xs font-mono text-slate-500 font-medium">Límite Legal: DBO &le; 20.0 mg/L</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- TAB 4: CONSOLA SQL DUCKDB                                         -->
+        <!-- ================================================================= -->
+        <div id="tab-sql" class="tab-content p-6 space-y-5 hidden">
+            
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Consola Analítica SQL de Planta (DuckDB In-Memory)</h2>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">
+                        Ejecución de consultas analíticas ANSI SQL directamente sobre los 80,000 registros SCADA en memoria
+                    </p>
+                </div>
+                <div class="bg-slate-100 border border-slate-300 text-slate-800 text-xs px-3.5 py-1.5 rounded-lg font-mono font-medium">
+                    ⚡ Latencia: &lt; 3 ms | 80,000 filas cargadas
+                </div>
+            </div>
+
+            <!-- Selector de Consultas Predefinidas -->
+            <div class="card-elevated p-4 space-y-3">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                    <label class="text-xs font-mono font-bold text-slate-600">CONSULTAS PREDEFINIDAS DE INGENIERÍA:</label>
+                    <select id="presetSql" onchange="onPresetSqlChange()" class="bg-slate-50 border border-slate-300 text-xs rounded-lg px-3 py-1.5 text-slate-800 font-medium cursor-pointer">
+                        <option value="1">1. Auditoría de Eventos Fuera de Norma TULSMA (> 20 mg/L)</option>
+                        <option value="2">2. Balances de Carga Orgánica y Ahorro por Turno Operativo</option>
+                        <option value="3">3. Top 10 Días con Mayor Consumo Energético en Sopladores</option>
+                        <option value="4">4. Dinámica de Sedimentador C-301 (Purga WAS vs Manto)</option>
+                    </select>
+                </div>
+
+                <textarea id="sqlInput" rows="4" class="w-full bg-[#0F172A] text-emerald-400 font-mono text-xs rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none border border-slate-700"></textarea>
+
+                <div class="flex items-center justify-between">
+                    <button onclick="runSql()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition">
+                        <i class="fa-solid fa-play"></i> Ejecutar Consulta SQL
+                    </button>
+                    <span id="sql-timer" class="text-xs font-mono text-slate-500"></span>
+                </div>
+            </div>
+
+            <!-- Tabla de Resultados SQL -->
+            <div class="card-elevated p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-xs font-bold text-slate-700 font-mono uppercase">Resultado de Consulta SQL</h4>
+                    <span id="sql-row-count" class="text-xs font-mono text-slate-500"></span>
+                </div>
+                <div id="sql-table-container" class="overflow-x-auto max-h-96 border border-slate-200 rounded-lg">
+                    <table id="sql-table" class="w-full text-xs text-left">
+                        <!-- Generado dinámicamente -->
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- JAVASCRIPT: LÓGICA DE ACTUALIZACIÓN, APEXCHARTS Y SIMULACIÓN          -->
+    <!-- ===================================================================== -->
+    <script>
+        let currentShift = 'all';
+        let chartTsInstance = null;
+        let chartClarInstance = null;
+        let chartDonutInstance = null;
+        let chartMonthlyInstance = null;
+        let chartAerationInstance = null;
+        let chartShiftInstance = null;
+
+        // 1. Cambio de Pestaña
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+            const btnMap = {
+                'tab-operaciones': 'btn-tab-operaciones',
+                'tab-finanzas': 'btn-tab-finanzas',
+                'tab-gemelo': 'btn-tab-gemelo',
+                'tab-sql': 'btn-tab-sql'
+            };
+            document.getElementById(btnMap[tabId]).classList.add('active');
+
+            if (tabId === 'tab-operaciones') {
+                loadTimeseriesChart();
+                loadClarifierChart();
+                loadDonutChart();
+            } else if (tabId === 'tab-finanzas') {
+                loadMonthlyBillingChart();
+                loadAerationCurveChart();
+                loadShiftSavingsChart();
+            } else if (tabId === 'tab-gemelo') {
+                runSimulation();
+            }
+
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 50);
+        }
+
+        // 2. Cambio de Turno
+        function onShiftChange() {
+            currentShift = document.getElementById('shiftFilter').value;
+            loadAllData();
+        }
+
+        // 3. Cargar KPIs y Gráficos
+        async function loadAllData() {
+            try {
+                // KPIs
+                const resKpi = await fetch(`/api/kpis?shift=${currentShift}`);
+                const dKpi = await resKpi.json();
+                
+                document.getElementById('kpi-q-in').innerText = dKpi.q_in.toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('kpi-q-daily').innerText = dKpi.q_in_daily.toLocaleString('en-US') + ' m³/d';
+                document.getElementById('kpi-bod-in').innerText = dKpi.bod_in.toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('kpi-load-in').innerText = dKpi.load_in_kgh.toLocaleString('en-US', {minimumFractionDigits: 1}) + ' kg DBO/h';
+                document.getElementById('kpi-bod-out').innerText = dKpi.bod_out.toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('kpi-comp-pct').innerText = dKpi.comp_pct.toFixed(2);
+                document.getElementById('kpi-records-text').innerText = (dKpi.total_rec - dKpi.out_rec).toLocaleString() + ' / ' + dKpi.total_rec.toLocaleString();
+
+                document.getElementById('kpi-fin-savings').innerText = '+$' + dKpi.savings_annual.toLocaleString() + ' USD/año';
+                document.getElementById('kpi-fin-period').innerText = '+$' + dKpi.savings_period.toLocaleString() + ' USD';
+                document.getElementById('kpi-fin-opex').innerText = dKpi.opex_pct.toFixed(2) + '%';
+                document.getElementById('kpi-fin-sec').innerText = dKpi.sec_opt.toFixed(3);
+                document.getElementById('kpi-fin-co2').innerText = dKpi.co2_annual.toFixed(2);
+
+                // Cargar Gráficos del tab activo
+                const activeTab = document.querySelector('.tab-content:not(.hidden)').id;
+                if (activeTab === 'tab-operaciones') {
+                    loadTimeseriesChart();
+                    loadClarifierChart();
+                    loadDonutChart();
+                } else if (activeTab === 'tab-finanzas') {
+                    loadMonthlyBillingChart();
+                    loadAerationCurveChart();
+                    loadShiftSavingsChart();
+                }
+            } catch (e) {
+                console.error("Error loading data:", e);
+            }
+        }
+
+        // 4. Gráfico Temporal OD vs DBO
+        async function loadTimeseriesChart() {
+            const res = await fetch(`/api/charts/timeseries?shift=${currentShift}`);
+            const data = await res.json();
+
+            const options = {
+                series: [
+                    { name: 'OD Reactor (mg/L)', type: 'line', data: data.do_vals },
+                    { name: 'DBO Efluente (mg/L)', type: 'line', data: data.bod_vals }
+                ],
+                chart: { height: 280, type: 'line', toolbar: { show: false }, zoom: { enabled: false } },
+                stroke: { width: [1.8, 2.2], curve: 'smooth' },
+                colors: ['#1E3A8A', '#10B981'],
+                labels: data.fechas,
+                xaxis: { type: 'datetime', labels: { format: 'MMM yyyy' }, axisBorder: { color: '#E2E8F0' } },
+                yaxis: [
+                    { title: { text: 'OD (mg/L)', style: { color: '#1E3A8A', fontWeight: 600 } }, min: 0, max: 6 },
+                    { opposite: true, title: { text: 'DBO Efluente (mg/L)', style: { color: '#10B981', fontWeight: 600 } }, min: 0, max: 32 }
+                ],
+                annotations: {
+                    yaxis: [{
+                        y: 20, yAxisIndex: 1, borderColor: '#EF4444', strokeDashArray: 4, borderWidth: 2,
+                        label: { borderColor: '#EF4444', style: { color: '#FFF', background: '#EF4444', fontWeight: 700 }, text: 'Límite TULSMA: 20.0 mg/L' }
+                    }]
+                },
+                grid: { borderColor: '#F1F5F9' },
+                legend: { show: false }
+            };
+
+            if (chartTsInstance) chartTsInstance.destroy();
+            chartTsInstance = new ApexCharts(document.getElementById("chart-timeseries"), options);
+            chartTsInstance.render();
+        }
+
+        // 5. Gráfico Clarificador C-301
+        async function loadClarifierChart() {
+            const res = await fetch(`/api/charts/clarifier?shift=${currentShift}`);
+            const pts = await res.json();
+
+            const options = {
+                series: [{ name: 'Muestras C-301', data: pts.map(p => [p.x, p.y]) }],
+                chart: { height: 240, type: 'scatter', toolbar: { show: false } },
+                colors: ['#0EA5E9'],
+                xaxis: { title: { text: 'Caudal de Purga WAS (m³/h)' }, min: 8, max: 20 },
+                yaxis: { title: { text: 'Altura Manto de Lodos (m)' }, min: 0.5, max: 2.4 },
+                annotations: {
+                    yaxis: [{
+                        y: 2.2, borderColor: '#EF4444', strokeDashArray: 4, borderWidth: 2,
+                        label: { borderColor: '#EF4444', style: { color: '#FFF', background: '#EF4444', fontWeight: 700 }, text: 'Alerta Manto Alto (>2.2 m)' }
+                    }]
+                },
+                grid: { borderColor: '#F1F5F9' }
+            };
+
+            if (chartClarInstance) chartClarInstance.destroy();
+            chartClarInstance = new ApexCharts(document.getElementById("chart-clarifier"), options);
+            chartClarInstance.render();
+        }
+
+        // 6. Gráfico Donut de Cumplimiento
+        async function loadDonutChart() {
+            const res = await fetch(`/api/charts/compliance?shift=${currentShift}`);
+            const data = await res.json();
+
+            const options = {
+                series: [data.optimo, data.alerta, data.fuera],
+                chart: { height: 250, type: 'donut' },
+                labels: ['Óptimo (Normal)', 'Alerta Preventiva', 'Fuera de Norma (>20 mg/L)'],
+                colors: ['#10B981', '#F59E0B', '#EF4444'],
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '65%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: 'Total Lecturas',
+                                    formatter: () => '80,000'
+                                }
+                            }
+                        }
+                    }
+                },
+                legend: { position: 'bottom', fontSize: '11px' }
+            };
+
+            if (chartDonutInstance) chartDonutInstance.destroy();
+            chartDonutInstance = new ApexCharts(document.getElementById("chart-donut"), options);
+            chartDonutInstance.render();
+        }
+
+        // 7. Gráfico Comparativa Mensual Facturación
+        async function loadMonthlyBillingChart() {
+            const res = await fetch(`/api/charts/monthly_billing?shift=${currentShift}`);
+            const data = await res.json();
+
+            const options = {
+                series: [
+                    { name: 'Costo Base ($ USD)', data: data.base },
+                    { name: 'Costo Optimizado ($ USD)', data: data.opt }
+                ],
+                chart: { type: 'bar', height: 240, toolbar: { show: false } },
+                plotOptions: { bar: { horizontal: false, columnWidth: '55%', borderRadius: 3 } },
+                dataLabels: { enabled: false },
+                colors: ['#F59E0B', '#10B981'],
+                xaxis: { categories: data.categories },
+                yaxis: { title: { text: 'Facturación ($ USD)' }, labels: { formatter: (v) => '$' + (v/1000).toFixed(0) + 'k' } },
+                grid: { borderColor: '#F1F5F9' },
+                legend: { position: 'top', horizontalAlign: 'right' }
+            };
+
+            if (chartMonthlyInstance) chartMonthlyInstance.destroy();
+            chartMonthlyInstance = new ApexCharts(document.getElementById("chart-monthly-billing"), options);
+            chartMonthlyInstance.render();
+        }
+
+        // 8. Gráfico Curva Sobredosis de Aireación
+        async function loadAerationCurveChart() {
+            const res = await fetch(`/api/charts/aeration_curve?shift=${currentShift}`);
+            const pts = await res.json();
+
+            const options = {
+                series: [{ name: 'Datos SCADA', data: pts.map(p => [p.x, p.y]) }],
+                chart: { height: 240, type: 'scatter', toolbar: { show: false } },
+                colors: ['#38BDF8'],
+                xaxis: { title: { text: 'Oxígeno Disuelto (mg/L)' }, min: 0.0, max: 3.8 },
+                yaxis: { title: { text: 'Flujo Aire (km³/h)' }, min: 2, max: 12 },
+                annotations: {
+                    xaxis: [
+                        {
+                            x: 1.8, x2: 2.2, fillColor: '#10B981', opacity: 0.18,
+                            label: { borderColor: '#10B981', style: { color: '#FFF', background: '#10B981' }, text: 'Banda Óptima (1.8 - 2.2)' }
+                        },
+                        {
+                            x: 2.2, borderColor: '#EF4444', strokeDashArray: 4, borderWidth: 2,
+                            label: { borderColor: '#EF4444', style: { color: '#FFF', background: '#EF4444' }, text: 'Sobrecosto (>2.2)' }
+                        }
+                    ]
+                },
+                grid: { borderColor: '#F1F5F9' }
+            };
+
+            if (chartAerationInstance) chartAerationInstance.destroy();
+            chartAerationInstance = new ApexCharts(document.getElementById("chart-aeration-curve"), options);
+            chartAerationInstance.render();
+        }
+
+        // 9. Gráfico Ahorro por Turno
+        async function loadShiftSavingsChart() {
+            const res = await fetch('/api/charts/shift_savings');
+            const data = await res.json();
+
+            const options = {
+                series: [{ name: 'Ahorro Anual ($ USD)', data: data.values }],
+                chart: { type: 'bar', height: 230, toolbar: { show: false } },
+                plotOptions: { bar: { horizontal: true, borderRadius: 4, distributed: true } },
+                colors: ['#3B82F6', '#10B981', '#0EA5E9'],
+                xaxis: { categories: data.labels, labels: { formatter: (v) => '$' + v.toLocaleString() } },
+                dataLabels: { enabled: true, formatter: (v) => '$' + v.toLocaleString() + ' USD', style: { fontWeight: 700 } },
+                legend: { show: false },
+                grid: { borderColor: '#F1F5F9' }
+            };
+
+            if (chartShiftInstance) chartShiftInstance.destroy();
+            chartShiftInstance = new ApexCharts(document.getElementById("chart-shift-savings"), options);
+            chartShiftInstance.render();
+        }
+
+        // 10. Simulación ML XGBoost
+        async function runSimulation() {
+            const flow = parseFloat(document.getElementById('sim-flow').value);
+            const bod = parseFloat(document.getElementById('sim-bod').value);
+            const doVal = parseFloat(document.getElementById('sim-do').value);
+            const air = parseFloat(document.getElementById('sim-air').value);
+            const was = parseFloat(document.getElementById('sim-was').value);
+
+            document.getElementById('svg-flow-val').textContent = Math.round(flow) + ' m³/h';
+            document.getElementById('svg-do-val').textContent = doVal.toFixed(2) + ' mg/L';
+
+            const payload = {
+                influent_flow: flow,
+                influent_bod: bod,
+                tank_do: doVal,
+                air_flow: air,
+                was_flow: was
+            };
+
+            try {
+                const res = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                document.getElementById('svg-pred-val').textContent = data.pred_bod.toFixed(2) + ' mg/L';
+                document.getElementById('res-pred-bod').textContent = data.pred_bod.toFixed(2) + ' mg/L';
+                document.getElementById('res-eff').textContent = data.removal_eff.toFixed(1) + ' %';
+                document.getElementById('res-delta').textContent = (data.delta_tulsma >= 0 ? '+' : '') + data.delta_tulsma.toFixed(2) + ' mg/L vs TULSMA';
+
+                const statusEl = document.getElementById('res-status');
+                const predBox = document.getElementById('svg-pred-box');
+                const predLbl = document.getElementById('svg-pred-lbl');
+                const effLine = document.getElementById('svg-eff-line');
+
+                if (data.status === 'OPTIMO') {
+                    statusEl.textContent = '✔ CUMPLE TULSMA';
+                    statusEl.className = 'text-2xl font-extrabold font-mono text-emerald-600 my-1';
+                    predBox.setAttribute('stroke', '#10B981');
+                    predLbl.setAttribute('fill', '#10B981');
+                    effLine.setAttribute('stroke', '#10B981');
+                } else if (data.status === 'ALERTA') {
+                    statusEl.textContent = '⚠ ALERTA PREVENTIVA';
+                    statusEl.className = 'text-2xl font-extrabold font-mono text-amber-500 my-1';
+                    predBox.setAttribute('stroke', '#F59E0B');
+                    predLbl.setAttribute('fill', '#F59E0B');
+                    effLine.setAttribute('stroke', '#F59E0B');
+                } else {
+                    statusEl.textContent = '✖ FUERA DE NORMA';
+                    statusEl.className = 'text-2xl font-extrabold font-mono text-rose-600 my-1';
+                    predBox.setAttribute('stroke', '#EF4444');
+                    predLbl.setAttribute('fill', '#EF4444');
+                    effLine.setAttribute('stroke', '#EF4444');
+                }
+            } catch (e) {
+                console.error("Error in simulation:", e);
+            }
+        }
+
+        // 11. Consola SQL DuckDB
+        const sqlPresets = {
+            "1": "SELECT Timestamp, Shift, ROUND(Influent_Flow_m3h, 1) AS Caudal_m3h, ROUND(Influent_BOD_mgL, 1) AS DBO_Entrada, ROUND(Aeration_Tank_DO_mgL, 2) AS DO_Reactor, ROUND(Effluent_BOD_mgL, 2) AS DBO_Efluente, ROUND(Effluent_BOD_mgL - 20.0, 2) AS Exceso_TULSMA FROM telemetria_ptar WHERE Effluent_BOD_mgL > 20.0 ORDER BY Effluent_BOD_mgL DESC LIMIT 25;",
+            "2": "SELECT Shift, COUNT(*) AS Muestras, ROUND(AVG(Influent_Flow_m3h), 1) AS Caudal_Medio, ROUND(AVG(Effluent_BOD_mgL), 2) AS DBO_Salida_Media, ROUND(100.0 * COUNT(CASE WHEN Effluent_BOD_mgL <= 20.0 THEN 1 END) / COUNT(*), 2) AS Cumplimiento_pct, ROUND(SUM(Cost_Savings_USD), 2) AS Ahorro_Total_USD, ROUND(SUM(CO2_Reduction_kg) / 1000.0, 2) AS CO2_Evitado_Ton FROM telemetria_ptar GROUP BY Shift ORDER BY Ahorro_Total_USD DESC;",
+            "3": "SELECT date_trunc('day', CAST(Timestamp AS TIMESTAMP)) AS Fecha, ROUND(SUM(Energy_kWh_Baseline), 1) AS kWh_Base, ROUND(SUM(Energy_kWh_Optimized), 1) AS kWh_Opt, ROUND(SUM(Cost_Savings_USD), 2) AS Ahorro_USD FROM telemetria_ptar GROUP BY Fecha ORDER BY kWh_Base DESC LIMIT 10;",
+            "4": "SELECT ROUND(Clarifier_Blanket_Height_m, 1) AS Altura_Manto_m, COUNT(*) AS Eventos, ROUND(AVG(WAS_Flow_m3h), 2) AS WAS_Promedio, ROUND(AVG(Effluent_BOD_mgL), 2) AS DBO_Salida FROM telemetria_ptar GROUP BY Altura_Manto_m ORDER BY Altura_Manto_m DESC LIMIT 15;"
+        };
+
+        function onPresetSqlChange() {
+            const val = document.getElementById('presetSql').value;
+            document.getElementById('sqlInput').value = sqlPresets[val];
+        }
+
+        async function runSql() {
+            const q = document.getElementById('sqlInput').value;
+            const timerEl = document.getElementById('sql-timer');
+            const countEl = document.getElementById('sql-row-count');
+            const tableEl = document.getElementById('sql-table');
+
+            timerEl.textContent = 'Ejecutando en DuckDB...';
+            try {
+                const res = await fetch('/api/sql', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({query: q})
+                });
+                const data = await res.json();
+
+                if (!data.success) {
+                    timerEl.innerHTML = `<span class="text-rose-600 font-bold">Error: ${data.error} (${data.execution_ms} ms)</span>`;
+                    return;
+                }
+
+                timerEl.innerHTML = `<span class="text-emerald-600 font-bold">⚡ Ejecutado en ${data.execution_ms} ms</span>`;
+                countEl.textContent = `${data.total_rows.toLocaleString()} filas (mostrando ${data.rows.length})`;
+
+                // Render Table
+                let html = '<thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase font-mono text-[10px]"><tr>';
+                data.columns.forEach(col => {
+                    html += `<th class="py-2 px-3">${col}</th>`;
+                });
+                html += '</tr></thead><tbody class="divide-y divide-slate-100 font-mono text-[11px]">';
+                data.rows.forEach(r => {
+                    html += '<tr class="hover:bg-slate-50">';
+                    data.columns.forEach(col => {
+                        html += `<td class="py-1.5 px-3 text-slate-700">${r[col] !== null ? r[col] : ''}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                html += '</tbody>';
+                tableEl.innerHTML = html;
+            } catch (e) {
+                timerEl.textContent = 'Error de conexión';
+            }
+        }
+
+        // Inicialización al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            onPresetSqlChange();
+            loadAllData();
+            runSimulation();
+        });
+    </script>
+</body>
+</html>
