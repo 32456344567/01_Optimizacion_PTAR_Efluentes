@@ -94,9 +94,15 @@ El **Sensor Virtual XGBoost** (ver sección 2) alcanza, tras corregir una fuga d
 
 ---
 
-## 🚀 5. Despliegue y Ejecución
+## 🚀 5. Demo en Vivo y Ejecución Local
+
+### 🔗 Demo en Vivo
+La aplicación está desplegada y corriendo en producción sobre Railway:
+
+**https://01optimizacionptarefluentes-production.up.railway.app**
 
 ### Ejecución Local
+Si prefieres correrlo en tu propia máquina:
 ```bash
 # 1. Clonar el repositorio
 git clone https://github.com/32456344567/01_Optimizacion_PTAR_Efluentes.git
@@ -111,11 +117,7 @@ python server.py
 ```
 La aplicación queda disponible en `http://localhost:8501`.
 
-### Despliegue en la Nube (Railway)
-El repositorio se encuentra pre-configurado para despliegue en un clic:
-1. Conectar el repositorio de GitHub en [Railway.app](https://railway.app).
-2. Railway auto-detectará el `Procfile` (`uvicorn server:app`) e instalará `requirements.txt` automáticamente.
-3. La aplicación se publicará bajo una URL pública de alta disponibilidad (ej. `https://ptar-optimizacion.up.railway.app`) con motor SQL DuckDB en memoria ejecutándose en tiempo real.
+El despliegue en producción usa el `Procfile` del repositorio (`uvicorn server:app`); Railway lo detecta automáticamente e instala `requirements.txt` en cada push a `main`.
 
 ---
 *Documentación técnica de ingeniería desarrollada por Ing. Angelo Apolo.*
