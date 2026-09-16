@@ -1,18 +1,18 @@
 # Optimización Operativa de PTAR y Eficiencia Energética en Sistemas de Aireación
 
-**Ingeniería de Procesos, Balances de Materia y Control de Efluentes**  
-**Autor:** Ing. Angelo Apolo | Especialista en Operaciones, Procesos y Utilidades Industriales  
+**Ingeniería de Procesos, Balances de Materia y Control de Efluentes**
+**Autor:** Ing. Angelo Apolo | Especialista en Operaciones, Procesos y Utilidades Industriales
 
 ---
 
 ## 📌 1. Descripción del Proceso y Contexto Operativo
-El presente proyecto aborda la optimización técnica y operativa de una **Planta de Tratamiento de Aguas Residuales (PTAR)** industrial/municipal basada en el proceso de **lodos activados de mezcla completa** ($4,050\text{ m}^3$) y clarificación secundaria. 
+El presente proyecto aborda la optimización técnica y operativa de una **Planta de Tratamiento de Aguas Residuales (PTAR)** industrial/municipal basada en el proceso de **lodos activados de mezcla completa** (4,050 m³) y clarificación secundaria.
 
-La planta procesa un caudal medio de **$753\text{ m}^3\text{/h}$** con una carga orgánica de entrada de **$5,670\text{ kg DBO/día}$** ($317\text{ mg/L}$ DBO y $666\text{ mg/L}$ DQO medios). 
+La planta procesa un caudal medio de **753 m³/h** con una carga orgánica de entrada de **5,670 kg DBO/día** (317 mg/L DBO y 666 mg/L DQO medios).
 
-El principal desafío operativo de este tipo de instalaciones reside en el **sistema de sopladores de aireación**, el cual representa entre el **$50\%$ y $65\%$ del consumo eléctrico total de utilidades**. Históricamente, la planta operaba bajo una consigna conservadora de sobre-aireación constante ($DO > 2.5 - 3.5\text{ mg/L}$) por temor a sanciones ambientales del Ministerio de Ambiente (normativa **TULSMA Libro VI Anexo 1: DBO $\le 20\text{ mg/L}$**). 
+El principal desafío operativo de este tipo de instalaciones reside en el **sistema de sopladores de aireación**, el cual representa entre el **50% y 65% del consumo eléctrico total de utilidades**. Históricamente, la planta operaba bajo una consigna conservadora de sobre-aireación constante (DO > 2.5 - 3.5 mg/L) por temor a sanciones ambientales del Ministerio de Ambiente (normativa **TULSMA Libro VI Anexo 1: DBO ≤ 20 mg/L**).
 
-A pesar del elevado consumo energético, la planta experimentaba **$1,465$ eventos de descarga fuera de norma** ($1.83\%$ del tiempo operativo) debido a la incapacidad del sistema para anticipar las fluctuaciones diurnas de carga contaminante (turnos de producción a las 06:00 y 18:00).
+A pesar del elevado consumo energético, la planta experimentaba **1,465 eventos de descarga fuera de norma** (1.83% del tiempo operativo) debido a la incapacidad del sistema para anticipar las fluctuaciones diurnas de carga contaminante (turnos de producción a las 06:00 y 18:00).
 
 ```mermaid
 flowchart LR
@@ -35,14 +35,14 @@ flowchart LR
 Se implementó una reestructuración operativa basada en la metodología industrial **DMAIC**:
 
 1. **Define & Measure (Balances de Materia):**
-   * Auditoría de $80,000$ registros continuos de sensores SCADA a intervalos de 5 minutos.
-   * Determinación de parámetros de proceso: Tiempo de Retención Hidráulico ($HRT = 5.38\text{ horas}$), relación Alimento/Microorganismo ($F/M = 0.40\text{ kg DBO/kg MLSS}\cdot\text{d}$) y eficiencia media de remoción ($95.28\%$).
+   * Auditoría de 80,000 registros continuos de sensores SCADA a intervalos de 5 minutos.
+   * Determinación de parámetros de proceso: Tiempo de Retención Hidráulico (HRT = 5.38 horas), relación Alimento/Microorganismo (F/M = 0.40 kg DBO/kg MLSS·d) y eficiencia media de remoción (95.28%).
 2. **Analyze (Cinética y Lag Analysis):**
    * Análisis de correlación cruzada temporal (*Cross-Correlation*) para medir la inercia del reactor.
-   * Modelado de la curva de transferencia de oxígeno: comprobación experimental de la saturación bacteriana de Monod ($K_{DO} \approx 0.2 - 0.5\text{ mg/L}$). Se demostró que operar con $DO > 2.2\text{ mg/L}$ exige un $+35\%$ de caudal de sopladores con una ganancia marginal de remoción inferior a $0.9\text{ mg/L}$ de DBO.
+   * Modelado de la curva de transferencia de oxígeno: comprobación experimental de la saturación bacteriana de Monod (K_DO ≈ 0.2 - 0.5 mg/L). Se demostró que operar con DO > 2.2 mg/L exige un +35% de caudal de sopladores con una ganancia marginal de remoción inferior a 0.9 mg/L de DBO.
 3. **Improve (Sensor Virtual & Optimización de Setpoints):**
-   * Dado que los análisis de laboratorio demoran 5 días ($DBO_5$), se desarrolló un **Sensor Virtual (XGBoost Regressor)** con retardos temporales ($1\text{h}, 2\text{h}, 4\text{h}$) que estima la calidad del efluente en tiempo real ($MAE = 1.62\text{ mg/L}$).
-   * Redefinición de la consigna óptima de oxígeno disuelto en **$1.8 - 2.2\text{ mg/L}$**, reduciendo la velocidad de los sopladores mediante modulación del variador de frecuencia (VFD).
+   * Dado que los análisis de laboratorio demoran 5 días (DBO₅), se desarrolló un **Sensor Virtual (XGBoost Regressor)** con retardos temporales (1h, 2h, 4h) que estima la calidad del efluente en tiempo real (MAE = 1.62 mg/L, R² = 0.32 en test).
+   * Redefinición de la consigna óptima de oxígeno disuelto en **1.8 - 2.2 mg/L**, reduciendo la velocidad de los sopladores mediante modulación del variador de frecuencia (VFD).
 4. **Control (Estandarización de Planta):**
    * Elaboración del Procedimiento Operativo Estándar formal (`POE-OP-PTAR-001`) con matriz de consignas por turno de operación.
    * Desarrollo de un Gemelo Digital interactivo (FastAPI + DuckDB SQL) para supervisión operativa en tiempo real.
@@ -53,17 +53,17 @@ Se implementó una reestructuración operativa basada en la metodología industr
 
 > **Nota de metodología y auditoría interna:** la primera versión de este proyecto estimaba el escenario optimizado con una fórmula de reducción de aire asumida (no derivada de los datos), lo que sobreestimaba el ahorro real en ~8x. Ese resultado fue auditado y corregido: el escenario optimizado que se reporta abajo se calcula con una **regresión lineal empírica (Aire ~ Oxígeno Disuelto + Carga Orgánica)** ajustada únicamente sobre los tramos donde la planta ya opera de forma eficiente (DO ≤ 2.2 mg/L), y aplicada para estimar el aire realmente necesario en los tramos sobre-aireados. Además, al revisar la correlación real Aire-DO en los 80,000 registros, se encontró que el caudal de aire promedio **disminuye** cuando el DO es más alto — lo opuesto de la hipótesis inicial de "sobre-aireación defensiva" — lo que indica que la carga orgánica es la variable de confusión y que el margen de ahorro real es mucho más modesto que el asumido originalmente. Detalle completo en `notebooks/02_optimizacion_energia.ipynb` (sección 9) y `notebooks/03_calculo_roi_financiero.ipynb` (sección 8).
 
-Los resultados anualizados para una tarifa eléctrica industrial estándar de **$\$0.092\text{ USD/kWh}$** se resumen a continuación:
+Los resultados anualizados para una tarifa eléctrica industrial estándar de **0.092 USD/kWh** se resumen a continuación:
 
 | Indicador Clave de Proceso | Línea Base (Histórica) | Escenario Optimizado | Impacto Técnico / Económico |
 |---|:---:|:---:|:---:|
-| **Gasto Eléctrico en Sopladores** | $\$215,266.42\text{ USD/año}$ | $\$214,179.89\text{ USD/año}$ | **$\mathbf{-\$1,086.53\text{ USD/año}}$ de ahorro neto recurrente** |
-| **Consumo Eléctrico de Aireación** | $2,339,852\text{ kWh/año}$ | $2,328,042\text{ kWh/año}$ | **$11,810\text{ kWh/año}$ de energía eléctrica ahorrada** |
-| **Consumo Específico (SEC)** | $1.186\text{ kWh/kg DBO}$ | $1.180\text{ kWh/kg DBO}$ | **$+0.50\%$ de mejora en eficiencia energética** |
-| **Banda de Oxígeno Disuelto (DO)** | $> 2.5 - 3.5\text{ mg/L}$ | **$1.8 - 2.2\text{ mg/L}$** | **Operación en rango óptimo de Monod (sin degradar calidad)** |
-| **Cumplimiento Ambiental (TULSMA), medido** | — | $98.17\%$ ($1{,}465$ de $80{,}000$ registros fuera de norma) | Cifra real medida sobre `Effluent_BOD_mgL`; no se re-simula bajo el escenario optimizado |
-| **Reducción de Huella de Carbono** | — | $-4.96\text{ t CO}_2\text{ eq/año}$ | **$4.96$ Toneladas de CO$_2$ evitadas al año** |
-| **Inversión Requerida (CAPEX)** | — | $\$0\text{ USD}$ (Ajustes SCADA / POE) | **Retorno Inmediato (Payback = 0 meses), aunque el ahorro anual es modesto** |
+| **Gasto Eléctrico en Sopladores** | $215,266.42 USD/año | $214,179.89 USD/año | **-$1,086.53 USD/año** de ahorro neto recurrente |
+| **Consumo Eléctrico de Aireación** | 2,339,852 kWh/año | 2,328,042 kWh/año | **11,810 kWh/año** de energía eléctrica ahorrada |
+| **Consumo Específico (SEC)** | 1.186 kWh/kg DBO | 1.180 kWh/kg DBO | **+0.50%** de mejora en eficiencia energética |
+| **Banda de Oxígeno Disuelto (DO)** | > 2.5 - 3.5 mg/L | **1.8 - 2.2 mg/L** | **Operación en rango óptimo de Monod** (sin degradar calidad) |
+| **Cumplimiento Ambiental (TULSMA), medido** | — | 98.17% (1,465 de 80,000 registros fuera de norma) | Cifra real medida sobre `Effluent_BOD_mgL`; no se re-simula bajo el escenario optimizado |
+| **Reducción de Huella de Carbono** | — | -4.96 t CO₂ eq/año | **4.96 toneladas de CO₂** evitadas al año |
+| **Inversión Requerida (CAPEX)** | — | $0 USD (Ajustes SCADA / POE) | **Retorno Inmediato** (Payback = 0 meses), aunque el ahorro anual es modesto |
 
 El **Sensor Virtual XGBoost** (ver sección 2) alcanza, tras corregir una fuga de datos detectada en la validación, un **R² de 0.32** y **MAE de 1.62 mg/L** en test — desempeño honesto y modesto, útil como indicador de tendencia y alerta temprana, no como reemplazo certificado del análisis de laboratorio.
 
@@ -71,6 +71,7 @@ El **Sensor Virtual XGBoost** (ver sección 2) alcanza, tras corregir una fuga d
 
 ## 📁 4. Estructura del Repositorio
 
+```
 ├── Procfile                               # Despliegue en producción Railway (uvicorn server:app)
 ├── requirements.txt                       # Dependencias (FastAPI, DuckDB, XGBoost)
 ├── server.py                              # App oficial: FastAPI + DuckDB SQL + Sensor Virtual XGBoost
