@@ -51,17 +51,21 @@ Se implementó una reestructuración operativa basada en la metodología industr
 
 ## 📊 3. Resultados Cuantitativos e Impacto Económico
 
+> **Nota de metodología y auditoría interna:** la primera versión de este proyecto estimaba el escenario optimizado con una fórmula de reducción de aire asumida (no derivada de los datos), lo que sobreestimaba el ahorro real en ~8x. Ese resultado fue auditado y corregido: el escenario optimizado que se reporta abajo se calcula con una **regresión lineal empírica (Aire ~ Oxígeno Disuelto + Carga Orgánica)** ajustada únicamente sobre los tramos donde la planta ya opera de forma eficiente (DO ≤ 2.2 mg/L), y aplicada para estimar el aire realmente necesario en los tramos sobre-aireados. Además, al revisar la correlación real Aire-DO en los 80,000 registros, se encontró que el caudal de aire promedio **disminuye** cuando el DO es más alto — lo opuesto de la hipótesis inicial de "sobre-aireación defensiva" — lo que indica que la carga orgánica es la variable de confusión y que el margen de ahorro real es mucho más modesto que el asumido originalmente. Detalle completo en `notebooks/02_optimizacion_energia.ipynb` (sección 9) y `notebooks/03_calculo_roi_financiero.ipynb` (sección 8).
+
 Los resultados anualizados para una tarifa eléctrica industrial estándar de **$\$0.092\text{ USD/kWh}$** se resumen a continuación:
 
 | Indicador Clave de Proceso | Línea Base (Histórica) | Escenario Optimizado | Impacto Técnico / Económico |
 |---|:---:|:---:|:---:|
-| **Gasto Eléctrico en Sopladores** | $\$215,266\text{ USD/año}$ | $\$206,721\text{ USD/año}$ | **$\mathbf{-\$8,545.23\text{ USD/año}}$ de ahorro neto recurrente** |
-| **Consumo Eléctrico de Aireación** | $2,339,852\text{ kWh/año}$ | $2,246,970\text{ kWh/año}$ | **$92,883\text{ kWh/año}$ de energía eléctrica ahorrada** |
-| **Consumo Específico (SEC)** | $1.186\text{ kWh/kg DBO}$ | $1.139\text{ kWh/kg DBO}$ | **$+3.97\%$ de mejora en eficiencia energética** |
-| **Banda de Oxígeno Disuelto (DO)** | $> 2.5 - 3.5\text{ mg/L}$ | **$1.8 - 2.2\text{ mg/L}$** | **Operación en rango óptimo de Monod** |
-| **Cumplimiento Ambiental (TULSMA)** | $122\text{ horas/año}$ fuera de norma | $100\%$ bajo control | **Riesgo legal y multas mitigados a cero** |
-| **Reducción de Huella de Carbono** | — | $-39.01\text{ t CO}_2\text{ eq/año}$ | **$39.01\text{ Toneladas de CO}_2$ evitadas al año** |
-| **Inversión Requerida (CAPEX)** | — | $\$0\text{ USD}$ (Ajustes SCADA / POE) | **Retorno Inmediato (Payback = 0 meses)** |
+| **Gasto Eléctrico en Sopladores** | $\$215,266.42\text{ USD/año}$ | $\$214,179.89\text{ USD/año}$ | **$\mathbf{-\$1,086.53\text{ USD/año}}$ de ahorro neto recurrente** |
+| **Consumo Eléctrico de Aireación** | $2,339,852\text{ kWh/año}$ | $2,328,042\text{ kWh/año}$ | **$11,810\text{ kWh/año}$ de energía eléctrica ahorrada** |
+| **Consumo Específico (SEC)** | $1.186\text{ kWh/kg DBO}$ | $1.180\text{ kWh/kg DBO}$ | **$+0.50\%$ de mejora en eficiencia energética** |
+| **Banda de Oxígeno Disuelto (DO)** | $> 2.5 - 3.5\text{ mg/L}$ | **$1.8 - 2.2\text{ mg/L}$** | **Operación en rango óptimo de Monod (sin degradar calidad)** |
+| **Cumplimiento Ambiental (TULSMA), medido** | — | $98.17\%$ ($1{,}465$ de $80{,}000$ registros fuera de norma) | Cifra real medida sobre `Effluent_BOD_mgL`; no se re-simula bajo el escenario optimizado |
+| **Reducción de Huella de Carbono** | — | $-4.96\text{ t CO}_2\text{ eq/año}$ | **$4.96$ Toneladas de CO$_2$ evitadas al año** |
+| **Inversión Requerida (CAPEX)** | — | $\$0\text{ USD}$ (Ajustes SCADA / POE) | **Retorno Inmediato (Payback = 0 meses), aunque el ahorro anual es modesto** |
+
+El **Sensor Virtual XGBoost** (ver sección 2) alcanza, tras corregir una fuga de datos detectada en la validación, un **R² de 0.32** y **MAE de 1.62 mg/L** en test — desempeño honesto y modesto, útil como indicador de tendencia y alerta temprana, no como reemplazo certificado del análisis de laboratorio.
 
 ---
 
@@ -83,22 +87,21 @@ Cuadro de mando para la gerencia de planta y directores de operaciones: desglose
 
 ## 📁 5. Estructura del Repositorio
 
-├── Procfile                               # Despliegue en producción Railway (Streamlit)
-├── requirements.txt                       # Dependencias globales (DuckDB, XGBoost, Plotly)
+├── Procfile                               # Despliegue en producción Railway (uvicorn server:app)
+├── requirements.txt                       # Dependencias (FastAPI, DuckDB, XGBoost)
+├── server.py                              # App oficial: FastAPI + DuckDB SQL + Sensor Virtual XGBoost
+├── templates/
+│   └── index.html                         # Frontend SCADA (HTML/JS/Tailwind), consume la API de server.py
 ├── data/
 │   ├── README_DATA.md                     # Diccionario técnico y rangos de sensores
-│   └── wwtp_time_series_data.csv          # Serie temporal de 80,000 registros (5 min)
+│   └── wwtp_time_series_data.csv          # Serie temporal cruda de 80,000 registros (5 min, Kaggle)
 ├── notebooks/
 │   ├── 01_eda_balances_masa.ipynb         # Balances de materia, HRT, cargas diurnas y lags
 │   ├── 02_optimizacion_energia.ipynb      # Curva de aireación, setpoint óptimo y Sensor Virtual
 │   └── 03_calculo_roi_financiero.ipynb    # Modelado financiero, ROI, SEC y métricas ESG
 ├── src/
-│   ├── modelo_ptar_xgboost.joblib         # Modelo serializado de inferencia
+│   ├── modelo_ptar_xgboost.joblib         # Modelo serializado de inferencia (sin fuga de datos)
 │   └── features_ptar.joblib               # Esquema de características de entrada
-├── app/
-│   ├── app.py                             # Plataforma Web SCADA, Motor SQL & Gemelo Digital
-│   ├── requirements.txt                   # Dependencias para contenedor de producción
-│   └── Procfile                           # Configuración de ejecución en Railway
 ├── powerbi/
 │   ├── background_pagina_01.png           # Plantilla Canvas Background 1920x1080 (Operaciones)
 │   ├── background_pagina_02.png           # Plantilla Canvas Background 1920x1080 (Energía y OPEX)
@@ -119,17 +122,19 @@ Cuadro de mando para la gerencia de planta y directores de operaciones: desglose
 git clone https://github.com/32456344567/01_Optimizacion_PTAR_Efluentes.git
 cd 01_Optimizacion_PTAR_Efluentes
 
-# 2. Instalar dependencias con soporte SQL DuckDB
+# 2. Instalar dependencias (FastAPI, DuckDB, XGBoost)
 pip install -r requirements.txt
 
-# 3. Iniciar la Plataforma Web SCADA & Analítica SQL
-streamlit run app/app.py
+# 3. Iniciar la Plataforma Web SCADA & Analítica SQL (FastAPI + DuckDB)
+python server.py
+# equivalente: uvicorn server:app --reload --port 8501
 ```
+La aplicación queda disponible en `http://localhost:8501`.
 
 ### Despliegue en la Nube (Railway)
 El repositorio se encuentra pre-configurado para despliegue en un clic:
 1. Conectar el repositorio de GitHub en [Railway.app](https://railway.app).
-2. Railway auto-detectará el `Procfile` e instalará `requirements.txt` automáticamente.
+2. Railway auto-detectará el `Procfile` (`uvicorn server:app`) e instalará `requirements.txt` automáticamente.
 3. La aplicación se publicará bajo una URL pública de alta disponibilidad (ej. `https://ptar-optimizacion.up.railway.app`) con motor SQL DuckDB en memoria ejecutándose en tiempo real.
 
 ---

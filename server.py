@@ -89,9 +89,9 @@ def get_kpis(shift: str = "all", month: str = "all"):
     co2_period = row_fin[4] if row_fin[4] else 0.0
     co2_annual = round(co2_period * annual_factor, 2)
 
-    sec_opt = row_fin[2] if row_fin[2] else 1.139
+    sec_opt = row_fin[2] if row_fin[2] else 1.180
     sec_base = row_fin[3] if row_fin[3] else 1.186
-    sec_reduc = round(((sec_base - sec_opt) / sec_base) * 100.0, 1) if sec_base else 4.0
+    sec_reduc = round(((sec_base - sec_opt) / sec_base) * 100.0, 1) if sec_base else 0.5
 
     return {
         "q_in": row_op[0] if row_op[0] else 753.05,
@@ -104,7 +104,7 @@ def get_kpis(shift: str = "all", month: str = "all"):
         "out_rec": row_op[5] if row_op[5] else 1465,
         "savings_annual": savings_annual,
         "savings_period": savings_period,
-        "opex_pct": row_fin[1] if row_fin[1] else 3.92,
+        "opex_pct": row_fin[1] if row_fin[1] else 0.5,
         "sec_opt": sec_opt,
         "sec_base": sec_base,
         "sec_reduction_pct": sec_reduc,
@@ -207,7 +207,7 @@ def get_monthly_billing(shift: str = "all"):
             ORDER BY m_num
         """
         rows = duck_conn.execute(q).fetchall()
-        meses_es = {"Jan": "Ene", "Feb": "Feb", "Mar": "Mar", "Apr": "Abr", "May": "May", "Jun": "Jun", "Jul": "Jul", "Aug": "Ago", "Sep": "Sep", "Oct": "Oct"}
+        meses_es = {"Jan": "Ene", "Feb": "Feb", "Mar": "Mar", "Apr": "Abr", "May": "May", "Jun": "Jun", "Jul": "Jul", "Aug": "Ago", "Sep": "Sep", "Oct": "Oct", "Nov": "Nov", "Dec": "Dic"}
         return {
             "categories": [meses_es.get(r[1], r[1]) for r in rows if len(r) >= 4],
             "base": [int(r[2]) for r in rows if len(r) >= 4],
@@ -260,12 +260,10 @@ def predict_effluent(req: PredictRequest):
     load_b = (sq * sbod) / 1000.0
     fm_r = (load_b * 24.0) / (V_reactor * 3.5)
 
-    # 3. Dynamic Biological Efficiency Estimation (replaces static hardcoded 95.2)
-    # Reflects kinetic retention and DO availability
-    est_eff = 95.2 * min(1.0, (hrt_h / 5.38)**0.3) * min(1.0, (sdo / 2.0)**0.25)
-    est_eff = max(10.0, min(99.0, est_eff))
-
     # Base ML Inflow Vector
+    # Nota: BOD_Removal_Efficiency_pct fue removida deliberadamente. Se calcula como
+    # (Influent_BOD - Effluent_BOD) / Influent_BOD, es decir, se deriva del propio target
+    # que este modelo intenta predecir (fuga de datos). El modelo fue reentrenado sin ella.
     inp = {
         'Influent_Flow_m3h': min(sq, 1200.0), 'Influent_BOD_mgL': sbod, 'Influent_COD_mgL': sbod * 2.1,
         'Influent_TSS_mgL': 280.0, 'Influent_NH4_mgL': 41.0, 'Aeration_Tank_DO_mgL': sdo,
@@ -273,10 +271,10 @@ def predict_effluent(req: PredictRequest):
         'RAS_Flow_m3h': 500.0, 'WAS_Flow_m3h': swas, 'Clarifier_Blanket_Height_m': 1.45,
         'Clarifier_Overflow_TSS_mgL': 21.5, 'ORP_mV': 50.0 + (sdo - 2.0) * 45.0, 'pH': 7.2,
         'F_M_Ratio': fm_r, 'Load_Influent_BOD_kgh': load_b, 'Load_Influent_COD_kgh': (sq * sbod * 2.1) / 1000.0,
-        'BOD_Removal_Efficiency_pct': est_eff, 'HRT_hours': hrt_h, 'Hour_sin': 0.0, 'Hour_cos': 1.0,
+        'HRT_hours': hrt_h, 'Hour_sin': 0.0, 'Hour_cos': 1.0,
         'Influent_Flow_lag_1h': min(sq, 1200.0), 'Load_BOD_lag_1h': load_b, 'DO_lag_1h': sdo, 'Air_Flow_lag_1h': sair,
-        'Influent_Flow_lag_2h': min(sq, 1200.0), 'Load_BOD_lag_2h': load_bod_kgh if 'load_bod_kgh' in locals() else load_b, 'DO_lag_2h': sdo, 'Air_Flow_lag_2h': sair,
-        'Influent_Flow_lag_4h': min(sq, 1200.0), 'Load_BOD_lag_4h': load_bod_kgh if 'load_bod_kgh' in locals() else load_b, 'DO_lag_4h': sdo, 'Air_Flow_lag_4h': sair,
+        'Influent_Flow_lag_2h': min(sq, 1200.0), 'Load_BOD_lag_2h': load_b, 'DO_lag_2h': sdo, 'Air_Flow_lag_2h': sair,
+        'Influent_Flow_lag_4h': min(sq, 1200.0), 'Load_BOD_lag_4h': load_b, 'DO_lag_4h': sdo, 'Air_Flow_lag_4h': sair,
         'DO_rollmean_2h': sdo, 'Air_rollmean_2h': sair, 'Clarifier_Blanket_rollmean_4h': 1.45
     }
 
@@ -372,8 +370,14 @@ class SqlRequest(BaseModel):
 @app.post("/api/sql")
 def execute_sql(req: SqlRequest):
     t0 = time.time()
+    clean_q = req.query.strip().rstrip(";")
+    if not clean_q.lower().startswith(("select", "with")):
+        return {
+            "success": False,
+            "error": "Solo se permiten consultas de lectura (SELECT / WITH).",
+            "execution_ms": 0.0
+        }
     try:
-        clean_q = req.query.strip().rstrip(";")
         with db_lock:
             res_df = duck_conn.execute(clean_q).fetchdf()
         ms = round((time.time() - t0) * 1000, 2)
