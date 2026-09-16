@@ -45,7 +45,7 @@ Se implementó una reestructuración operativa basada en la metodología industr
    * Redefinición de la consigna óptima de oxígeno disuelto en **$1.8 - 2.2\text{ mg/L}$**, reduciendo la velocidad de los sopladores mediante modulación del variador de frecuencia (VFD).
 4. **Control (Estandarización de Planta):**
    * Elaboración del Procedimiento Operativo Estándar formal (`POE-OP-PTAR-001`) con matriz de consignas por turno de operación.
-   * Modelo dimensional y medidas DAX para supervisión en Power BI y desarrollo de un Gemelo Digital interactivo en Streamlit.
+   * Desarrollo de un Gemelo Digital interactivo (FastAPI + DuckDB SQL) para supervisión operativa en tiempo real.
 
 ---
 
@@ -69,23 +69,7 @@ El **Sensor Virtual XGBoost** (ver sección 2) alcanza, tras corregir una fuga d
 
 ---
 
-## 🖥️ 4. Dashboards Ejecutivos de Business Intelligence (Power BI)
-
-El proyecto cuenta con un sistema de doble panel de nivel ejecutivo desarrollado bajo estándares de visualización industrial **ISA-101**, integrando telemetría de planta en tiempo real con auditoría de costos y cumplimiento legal.
-
-### Vista 01: Supervisión SCADA, Control de Operaciones y Calidad de Efluentes
-Monitoreo continuo de caudal influyente ($753.05\text{ m}^3\text{/h}$), carga orgánica ($316.97\text{ mg/L}$ DBO), calidad de descarga ($14.74\text{ mg/L}$ DBO) y tasa de cumplimiento del límite máximo permisible TULSMA Libro VI ($98.17\%$).
-
-![Dashboard Vista 01 - Operaciones SCADA](powerbi/capturas_dashboard/dashboard_page_01_operaciones_scada.png)
-
-### Vista 02: Eficiencia Energética, Costos OPEX y Sostenibilidad ESG
-Cuadro de mando para la gerencia de planta y directores de operaciones: desglose mensual de facturación eléctrica ($206,721\text{ USD}$ optimizado vs $\$215,266\text{ USD}$ base), ahorro neto anualizado ($+\$8,545\text{ USD}$), curva de histéresis de sobredosis de aireación y descarbonización auditada ($39.04\text{ Ton CO}_2\text{ eq/año}$).
-
-![Dashboard Vista 02 - Eficiencia Energética y Costos](powerbi/capturas_dashboard/dashboard_page_02_energia_opex_esg.png)
-
----
-
-## 📁 5. Estructura del Repositorio
+## 📁 4. Estructura del Repositorio
 
 ├── Procfile                               # Despliegue en producción Railway (uvicorn server:app)
 ├── requirements.txt                       # Dependencias (FastAPI, DuckDB, XGBoost)
@@ -94,7 +78,8 @@ Cuadro de mando para la gerencia de planta y directores de operaciones: desglose
 │   └── index.html                         # Frontend SCADA (HTML/JS/Tailwind), consume la API de server.py
 ├── data/
 │   ├── README_DATA.md                     # Diccionario técnico y rangos de sensores
-│   └── wwtp_time_series_data.csv          # Serie temporal cruda de 80,000 registros (5 min, Kaggle)
+│   ├── wwtp_time_series_data.csv          # Serie temporal cruda de 80,000 registros (5 min, Kaggle)
+│   └── dataset_ptar_dashboard.csv         # Dataset enriquecido (turnos, cumplimiento, costos) que consume server.py
 ├── notebooks/
 │   ├── 01_eda_balances_masa.ipynb         # Balances de materia, HRT, cargas diurnas y lags
 │   ├── 02_optimizacion_energia.ipynb      # Curva de aireación, setpoint óptimo y Sensor Virtual
@@ -102,19 +87,13 @@ Cuadro de mando para la gerencia de planta y directores de operaciones: desglose
 ├── src/
 │   ├── modelo_ptar_xgboost.joblib         # Modelo serializado de inferencia (sin fuga de datos)
 │   └── features_ptar.joblib               # Esquema de características de entrada
-├── powerbi/
-│   ├── background_pagina_01.png           # Plantilla Canvas Background 1920x1080 (Operaciones)
-│   ├── background_pagina_02.png           # Plantilla Canvas Background 1920x1080 (Energía y OPEX)
-│   ├── capturas_dashboard/                # Capturas ejecutivas de alta definición
-│   ├── dataset_ptar_dashboard.csv         # Dataset oficial de telemetría (80,000 registros)
-│   └── especificaciones_dashboard.md     # Medidas DAX y arquitectura dimensional
 └── entregables_planta/
     └── POE_Control_Operativo_PTAR.md      # Procedimiento Operativo Estándar POE-OP-PTAR-001
 ```
 
 ---
 
-## 🚀 6. Despliegue y Ejecución
+## 🚀 5. Despliegue y Ejecución
 
 ### Ejecución Local
 ```bash

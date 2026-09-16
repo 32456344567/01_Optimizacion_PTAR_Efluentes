@@ -15,7 +15,7 @@ app = FastAPI(title="PTAR Industrial Executive SCADA")
 db_lock = threading.Lock()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CSV_PATH = os.path.join(BASE_DIR, "powerbi", "dataset_ptar_dashboard.csv")
+CSV_PATH = os.path.join(BASE_DIR, "data", "dataset_ptar_dashboard.csv")
 if not os.path.exists(CSV_PATH):
     CSV_PATH = os.path.join(BASE_DIR, "dataset_ptar_dashboard.csv")
 
